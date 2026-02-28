@@ -18,10 +18,7 @@ const buildErrorMessage = async (response: Response) => {
   return `Request failed with status ${response.status}`;
 };
 
-// ── Helpers ──────────────────────────────────────────────────
-
-const getToken = (): string | null =>
-  typeof window !== 'undefined' ? localStorage.getItem('store_token') : null;
+// ─── Generic helpers ─────────────────────────────────────────────
 
 export const apiPost = async <TResponse>(path: string, body: unknown, token?: string): Promise<TResponse> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -44,9 +41,9 @@ export const apiGet = async <TResponse>(path: string, token?: string): Promise<T
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -56,35 +53,25 @@ export const apiGet = async <TResponse>(path: string, token?: string): Promise<T
   return (await response.json()) as TResponse;
 };
 
-// ── Types ────────────────────────────────────────────────────
+// ─── Product types ───────────────────────────────────────────────
 
 export interface Product {
   id: string;
   name: string;
+  sku: string;
   description: string;
   price: number;
   image: string;
-  category: string;
+  inventory: number;
   stock: number;
+  status: string;
+  category: string | null;
+  categoryId: string | null;
   rating: number;
   reviewCount: number;
-}
-
-export interface OrderStatus {
-  id: string;
-  status: string;
   createdAt: string;
   updatedAt: string;
-  totalAmount: number;
-  items: {
-    productId: string;
-    name: string;
-    quantity: number;
-    unitPrice: number;
-  }[];
 }
-
-// ── Constants ────────────────────────────────────────────────
 
 export const CATEGORIES = [
   'Electronics',
@@ -95,50 +82,57 @@ export const CATEGORIES = [
   'Beauty',
 ] as const;
 
-// ── Auth ─────────────────────────────────────────────────────
+// ─── Auth helpers ────────────────────────────────────────────────
 
-export async function login(
-  email: string,
-  password: string,
-): Promise<{ accessToken?: string; mfaRequired?: boolean }> {
-  return apiPost('/auth/login', { email, password });
+interface LoginResponse {
+  accessToken?: string;
+  mfaRequired?: boolean;
 }
 
-export async function register(
-  email: string,
-  password: string,
-): Promise<{ accessToken?: string }> {
-  return apiPost('/auth/register', { email, password });
+interface RegisterResponse {
+  accessToken: string;
 }
 
-export async function getMe(): Promise<{
+interface MeResponse {
   userId: string;
   email: string;
   roles: string[];
-}> {
-  const token = getToken();
-  return apiGet('/auth/me', token ?? undefined);
 }
 
-// ── Products ─────────────────────────────────────────────────
+const getStoredToken = (): string | null =>
+  typeof window !== 'undefined' ? localStorage.getItem('store_token') : null;
 
-export async function getProducts(
-  params?: { search?: string; category?: string },
-): Promise<Product[]> {
+export const login = async (email: string, password: string): Promise<LoginResponse> =>
+  apiPost<LoginResponse>('/auth/login', { email, password });
+
+export const register = async (email: string, password: string): Promise<RegisterResponse> =>
+  apiPost<RegisterResponse>('/auth/register', { email, password });
+
+export const getMe = async (): Promise<MeResponse> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiGet<MeResponse>('/auth/me', token);
+};
+
+// ─── Product helpers ─────────────────────────────────────────────
+
+interface GetProductsParams {
+  search?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.category) query.set('category', params.category);
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.limit) query.set('limit', String(params.limit));
+
   const qs = query.toString();
-  return apiGet(`/products${qs ? `?${qs}` : ''}`);
-}
+  return apiGet<Product[]>(`/products${qs ? `?${qs}` : ''}`);
+};
 
-export async function getProduct(id: string): Promise<Product> {
-  return apiGet(`/products/${id}`);
-}
-
-// ── Orders ───────────────────────────────────────────────────
-
-export async function getOrder(id: string): Promise<OrderStatus> {
-  const token = getToken();
-  return apiGet(`/orders/${id}`, token ?? undefined);
-}
+export const getProduct = async (id: string): Promise<Product> =>
+  apiGet<Product>(`/products/${id}`);
