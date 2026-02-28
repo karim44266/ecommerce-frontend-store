@@ -23,10 +23,11 @@ function ProductsContent() {
   const category = searchParams.get('category') ?? ''
 
   useEffect(() => {
-    setLoading(true)
+    let cancelled = false
     getProducts({ search: search || undefined, category: category || undefined })
-      .then(setProducts)
-      .finally(() => setLoading(false))
+      .then((data) => { if (!cancelled) setProducts(data) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [search, category])
 
   const applySearch = (e: React.FormEvent) => {

@@ -9,7 +9,7 @@ import {
   Truck, ShieldCheck, RotateCcw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -33,16 +33,18 @@ export default function ProductDetailPage() {
   const id = params.id as string
 
   useEffect(() => {
-    setLoading(true)
-    setError('')
+    let cancelled = false
     getProduct(id)
       .then(async (p) => {
+        if (cancelled) return
         setProduct(p)
+        setError('')
         const all = await getProducts({ category: p.category })
-        setRelated(all.filter((x) => x.id !== p.id).slice(0, 4))
+        if (!cancelled) setRelated(all.filter((x) => x.id !== p.id).slice(0, 4))
       })
-      .catch(() => setError('Product not found'))
-      .finally(() => setLoading(false))
+      .catch(() => { if (!cancelled) setError('Product not found') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [id])
 
   const handleAddToCart = () => {
@@ -74,7 +76,7 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-4">
         <p className="text-4xl">😕</p>
         <h1 className="text-2xl font-bold text-foreground">Product not found</h1>
-        <p className="text-muted-foreground">This item may have been removed or doesn't exist.</p>
+        <p className="text-muted-foreground">This item may have been removed or doesn&apos;t exist.</p>
         <Button onClick={() => router.push('/products')}>Browse Products</Button>
       </div>
     )

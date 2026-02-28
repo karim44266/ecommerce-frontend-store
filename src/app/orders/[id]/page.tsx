@@ -46,11 +46,12 @@ export default function OrderTrackingPage() {
       router.push(`/login?redirect=/orders/${orderId}`)
       return
     }
-    setLoading(true)
+    let cancelled = false
     getOrder(orderId)
-      .then(setOrder)
-      .catch(() => setError('Order not found or you do not have access.'))
-      .finally(() => setLoading(false))
+      .then((data) => { if (!cancelled) setOrder(data) })
+      .catch(() => { if (!cancelled) setError('Order not found or you do not have access.') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [orderId, user, authLoading, router])
 
   if (authLoading || loading) {

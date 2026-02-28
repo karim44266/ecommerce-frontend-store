@@ -156,7 +156,7 @@ export default function RegisterPage() {
                 {[1,2,3,4,5].map(s => <span key={s} className="text-amber-400 text-xs">★</span>)}
               </div>
               <p className="text-sm text-neutral-200 italic">
-                "Best online store I've used. Fast delivery and everything as described!"
+                &ldquo;Best online store I&apos;ve used. Fast delivery and everything as described!&rdquo;
               </p>
               <p className="text-xs text-neutral-400">— Sarah M., verified buyer</p>
             </div>

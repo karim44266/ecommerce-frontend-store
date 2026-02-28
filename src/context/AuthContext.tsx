@@ -29,10 +29,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem('store_token')
     if (!stored) {
-      setLoading(false)
+      queueMicrotask(() => setLoading(false))
       return
     }
-    setToken(stored)
+    queueMicrotask(() => setToken(stored))
     getMe()
       .then(setUser)
       .catch(() => {
