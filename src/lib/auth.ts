@@ -1,4 +1,4 @@
-const STORE_TOKEN_KEY = 'ecom_store_token';
+const STORE_TOKEN_KEY = 'store_token';
 
 export const getStoreToken = (): string | null => {
   if (typeof window === 'undefined') {
