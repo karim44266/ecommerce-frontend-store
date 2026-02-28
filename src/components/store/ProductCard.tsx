@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, ShoppingCart } from 'lucide-react'
+import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -54,31 +54,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Details */}
         <CardContent className="p-4 space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            {product.category}
+            {product.category || 'Uncategorized'}
           </p>
           <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-muted-foreground transition-colors">
             {product.name}
           </h3>
 
-          {/* Rating */}
-          <div className="flex items-center gap-1">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={cn(
-                    'h-3 w-3',
-                    star <= Math.round(product.rating)
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'fill-neutral-200 text-neutral-200',
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {product.rating.toFixed(1)} ({product.reviewCount.toLocaleString()})
-            </span>
-          </div>
+          {/* Category label */}
 
           {/* Price + CTA */}
           <div className="flex items-center justify-between pt-1">

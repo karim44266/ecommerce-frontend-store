@@ -67,11 +67,25 @@ export interface Product {
   status: string;
   category: string | null;
   categoryId: string | null;
-  rating: number;
-  reviewCount: number;
   createdAt: string;
   updatedAt: string;
 }
+
+interface PaginatedResponse<T> {
+  data: T[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+// ─── Category types ──────────────────────────────────────────────
+
+export interface SimpleCategory {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export const getCategories = async (): Promise<SimpleCategory[]> =>
+  apiGet<SimpleCategory[]>('/categories/simple');
 
 export const CATEGORIES = [
   'Electronics',
@@ -131,8 +145,33 @@ export const getProducts = async (params?: GetProductsParams): Promise<Product[]
   if (params?.limit) query.set('limit', String(params.limit));
 
   const qs = query.toString();
-  return apiGet<Product[]>(`/products${qs ? `?${qs}` : ''}`);
+  const res = await apiGet<PaginatedResponse<Product>>(`/products${qs ? `?${qs}` : ''}`);
+  return res.data;
 };
 
 export const getProduct = async (id: string): Promise<Product> =>
   apiGet<Product>(`/products/${id}`);
+
+// ─── Order types & helpers ───────────────────────────────────────
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface OrderStatus {
+  id: string;
+  status: string;
+  totalAmount: number;
+  items: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getOrder = async (id: string): Promise<OrderStatus> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiGet<OrderStatus>(`/orders/${id}`, token);
+};

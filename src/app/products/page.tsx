@@ -8,13 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getProducts, CATEGORIES, type Product } from '@/lib/api'
+import { getProducts, getCategories, type Product, type SimpleCategory } from '@/lib/api'
 
 function ProductsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<SimpleCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '')
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') ?? '')
@@ -22,8 +23,16 @@ function ProductsContent() {
   const search = searchParams.get('search') ?? ''
   const category = searchParams.get('category') ?? ''
 
+  // Load categories on mount
+  useEffect(() => {
+    getCategories()
+      .then(setCategories)
+      .catch(() => {})
+  }, [])
+
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     getProducts({ search: search || undefined, category: category || undefined })
       .then((data) => { if (!cancelled) setProducts(data) })
       .finally(() => { if (!cancelled) setLoading(false) })
@@ -102,13 +111,13 @@ function ProductsContent() {
             All
           </Badge>
         </button>
-        {CATEGORIES.map((cat) => (
-          <button key={cat} onClick={() => setCategory(cat)}>
+        {categories.map((cat) => (
+          <button key={cat.id} onClick={() => setCategory(cat.name)}>
             <Badge
-              variant={activeCategory === cat ? 'default' : 'outline'}
+              variant={activeCategory === cat.name ? 'default' : 'outline'}
               className="px-4 py-1.5 text-sm cursor-pointer"
             >
-              {cat}
+              {cat.name}
             </Badge>
           </button>
         ))}

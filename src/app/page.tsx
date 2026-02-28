@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/store/ProductCard'
-import { getProducts, CATEGORIES } from '@/lib/api'
+import { getProducts, getCategories, type SimpleCategory } from '@/lib/api'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   let featured: Awaited<ReturnType<typeof getProducts>> = []
+  let categories: SimpleCategory[] = []
   try {
-    featured = await getProducts()
+    ;[featured, categories] = await Promise.all([getProducts(), getCategories()])
   } catch {
     // backend may be unavailable at build time
   }
@@ -84,15 +85,15 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <Link
-              key={cat}
-              href={`/products?category=${encodeURIComponent(cat)}`}
+              key={cat.id}
+              href={`/products?category=${encodeURIComponent(cat.name)}`}
             >
               <Card className="group cursor-pointer hover:border-foreground hover:shadow-md transition-all duration-200">
                 <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
-                  <span className="text-2xl select-none">{categoryEmoji(cat)}</span>
-                  <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">{cat}</span>
+                  <span className="text-2xl select-none">{categoryEmoji(cat.name)}</span>
+                  <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">{cat.name}</span>
                 </CardContent>
               </Card>
             </Link>

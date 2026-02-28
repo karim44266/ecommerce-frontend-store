@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  Star, ShoppingCart, ArrowLeft, Minus, Plus, Package,
+  ShoppingCart, ArrowLeft, Minus, Plus, Package,
   Truck, ShieldCheck, RotateCcw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -39,7 +39,7 @@ export default function ProductDetailPage() {
         if (cancelled) return
         setProduct(p)
         setError('')
-        const all = await getProducts({ category: p.category })
+        const all = await getProducts({ category: p.category || undefined })
         if (!cancelled) setRelated(all.filter((x) => x.id !== p.id).slice(0, 4))
       })
       .catch(() => { if (!cancelled) setError('Product not found') })
@@ -89,10 +89,14 @@ export default function ProductDetailPage() {
         <Link href="/" className="hover:text-foreground">Home</Link>
         <span>/</span>
         <Link href="/products" className="hover:text-foreground">Products</Link>
-        <span>/</span>
-        <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-foreground">
-          {product.category}
-        </Link>
+        {product.category && (
+          <>
+            <span>/</span>
+            <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-foreground">
+              {product.category}
+            </Link>
+          </>
+        )}
         <span>/</span>
         <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
       </nav>
@@ -116,27 +120,18 @@ export default function ProductDetailPage() {
         {/* Info */}
         <div className="space-y-6">
           <div>
-            <Badge variant="secondary" className="mb-2 uppercase tracking-wider text-xs">
-              {product.category}
-            </Badge>
+            {product.category && (
+              <Badge variant="secondary" className="mb-2 uppercase tracking-wider text-xs">
+                {product.category}
+              </Badge>
+            )}
             <h1 className="text-3xl font-bold text-foreground leading-tight">
               {product.name}
             </h1>
           </div>
 
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {[1,2,3,4,5].map(s => (
-                <Star key={s} className={cn('h-4 w-4', s <= Math.round(product.rating)
-                  ? 'fill-amber-400 text-amber-400'
-                  : 'fill-neutral-200 text-neutral-200')} />
-              ))}
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {product.rating.toFixed(1)} ({product.reviewCount.toLocaleString()} reviews)
-            </span>
-          </div>
+          {/* SKU */}
+          <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
@@ -225,12 +220,14 @@ export default function ProductDetailPage() {
       {related.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">More in {product.category}</h2>
-            <Link href={`/products?category=${encodeURIComponent(product.category)}`}>
-              <Button variant="ghost" size="sm" className="gap-1">
-                View all <ArrowLeft className="h-3.5 w-3.5 rotate-180" />
-              </Button>
-            </Link>
+            <h2 className="text-xl font-bold text-foreground">{product.category ? `More in ${product.category}` : 'Related Products'}</h2>
+            {product.category && (
+              <Link href={`/products?category=${encodeURIComponent(product.category)}`}>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  View all <ArrowLeft className="h-3.5 w-3.5 rotate-180" />
+                </Button>
+              </Link>
+            )}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {related.map((p) => <ProductCard key={p.id} product={p} />)}
