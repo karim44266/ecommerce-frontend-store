@@ -3,12 +3,18 @@ import { ArrowRight, Truck, RotateCcw, ShieldCheck, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { ProductCard } from '@/components/store/ProductCard'
 import { getProducts, CATEGORIES } from '@/lib/api'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
-  const featured = await getProducts()
+  let featured: Awaited<ReturnType<typeof getProducts>> = []
+  try {
+    featured = await getProducts()
+  } catch {
+    // backend may be unavailable at build time
+  }
   const top = featured.slice(0, 4)
 
   return (
