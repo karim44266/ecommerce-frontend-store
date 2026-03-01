@@ -58,13 +58,18 @@ export default function CheckoutPage() {
     return null
   }
 
-  const canSubmit =
-    address.fullName.trim().length > 0 &&
-    address.addressLine1.trim().length > 0 &&
-    address.city.trim().length > 0 &&
-    address.state.trim().length > 0 &&
-    address.postalCode.trim().length > 0 &&
-    !submitting
+  if (items.length === 0 && !orderPlaced) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center space-y-4">
+        <ShoppingBag className="h-12 w-12 text-muted-foreground/40 mx-auto" />
+        <h1 className="text-xl font-bold">Your cart is empty</h1>
+        <p className="text-muted-foreground">Add items to your cart before checking out.</p>
+        <Link href="/products">
+          <Button>Browse Products</Button>
+        </Link>
+      </div>
+    )
+  }
 
   const handlePlaceOrder = async (e: FormEvent) => {
     e.preventDefault()
@@ -94,6 +99,7 @@ export default function CheckoutPage() {
           addressLine2: address.addressLine2 || undefined,
         },
       })
+      setOrderPlaced(true)
       clearCart()
       router.push(`/orders/${order.id}`)
     } catch (err) {
