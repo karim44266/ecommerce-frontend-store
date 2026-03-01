@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ShoppingBag } from 'lucide-react'
@@ -16,9 +16,21 @@ import { createOrder } from '@/lib/api'
 export default function CheckoutPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
-  const { items, subtotal, clearCart } = useCart()
+
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [address, setAddress] = useState({
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'US',
+  })
+
+  const updateField = (field: string, value: string) =>
+    setAddress((prev) => ({ ...prev, [field]: value }))
 
   const [address, setAddress] = useState({
     fullName: '',
@@ -46,26 +58,28 @@ export default function CheckoutPage() {
     return null
   }
 
-  if (items.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center space-y-4">
-        <ShoppingBag className="h-12 w-12 text-muted-foreground/40 mx-auto" />
-        <h1 className="text-xl font-bold">Your cart is empty</h1>
-        <p className="text-muted-foreground">Add items to your cart before checking out.</p>
-        <Link href="/products">
-          <Button>Browse Products</Button>
-        </Link>
-      </div>
-    )
-  }
+  const canSubmit =
+    address.fullName.trim().length > 0 &&
+    address.addressLine1.trim().length > 0 &&
+    address.city.trim().length > 0 &&
+    address.state.trim().length > 0 &&
+    address.postalCode.trim().length > 0 &&
+    !submitting
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: FormEvent) => {
     e.preventDefault()
-    if (!address.fullName || !address.addressLine1 || !address.city || !address.state || !address.postalCode) {
+    if (!canSubmit) return
+    if (
+      !address.fullName ||
+      !address.addressLine1 ||
+      !address.city ||
+      !address.state ||
+      !address.postalCode
+    ) {
       setError('Please fill in all required address fields.')
       return
     }
-
+    setError('')
     setSubmitting(true)
     setError('')
 
@@ -106,113 +120,175 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Shipping Address */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name *</Label>
-              <Input
-                id="fullName"
-                value={address.fullName}
-                onChange={(e) => updateField('fullName', e.target.value)}
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="addressLine1">Address Line 1 *</Label>
-              <Input
-                id="addressLine1"
-                value={address.addressLine1}
-                onChange={(e) => updateField('addressLine1', e.target.value)}
-                placeholder="123 Main St"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="addressLine2">Address Line 2</Label>
-              <Input
-                id="addressLine2"
-                value={address.addressLine2}
-                onChange={(e) => updateField('addressLine2', e.target.value)}
-                placeholder="Apt #4"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={address.city}
-                  onChange={(e) => updateField('city', e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="state">State *</Label>
-                <Input
-                  id="state"
-                  value={address.state}
-                  onChange={(e) => updateField('state', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code *</Label>
-                <Input
-                  id="postalCode"
-                  value={address.postalCode}
-                  onChange={(e) => updateField('postalCode', e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country *</Label>
-                <Input
-                  id="country"
-                  value={address.country}
-                  onChange={(e) => updateField('country', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Order Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="divide-y divide-border">
-              {items.map((item) => (
-                <li key={item.product.id} className="flex justify-between items-center py-3 text-sm">
-                  <div>
-                    <p className="font-medium">{item.product.name}</p>
-                    <p className="text-muted-foreground">Qty: {item.quantity}</p>
+      <form onSubmit={handlePlaceOrder}>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Shipping form */}
+          <div className="lg:col-span-3 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" /> Shipping Address
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    placeholder="John Doe"
+                    value={address.fullName}
+                    onChange={(e) => updateField('fullName', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressLine1">Address Line 1</Label>
+                  <Input
+                    id="addressLine1"
+                    placeholder="123 Main Street"
+                    value={address.addressLine1}
+                    onChange={(e) => updateField('addressLine1', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressLine2">Address Line 2 (optional)</Label>
+                  <Input
+                    id="addressLine2"
+                    placeholder="Apt, Suite, Unit, etc."
+                    value={address.addressLine2}
+                    onChange={(e) => updateField('addressLine2', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      placeholder="New York"
+                      value={address.city}
+                      onChange={(e) => updateField('city', e.target.value)}
+                      required
+                    />
                   </div>
-                  <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
-                </li>
-              ))}
-            </ul>
-            <Separator />
-            <div className="flex justify-between font-bold text-lg pt-1">
-              <span>Total</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      placeholder="NY"
+                      value={address.state}
+                      onChange={(e) => updateField('state', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="postalCode">ZIP / Postal Code</Label>
+                    <Input
+                      id="postalCode"
+                      placeholder="10001"
+                      value={address.postalCode}
+                      onChange={(e) => updateField('postalCode', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      placeholder="US"
+                      value={address.country}
+                      onChange={(e) => updateField('country', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-          {submitting ? 'Placing Order...' : `Place Order · $${subtotal.toFixed(2)}`}
-        </Button>
+        {/* Order summary */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card className="sticky top-24">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5" /> Order Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Items */}
+              <ul className="space-y-3 max-h-64 overflow-y-auto">
+                {items.map((item) => (
+                  <li key={item.product.id} className="flex gap-3 items-start">
+                    <div className="relative h-12 w-12 rounded-md overflow-hidden bg-muted flex-shrink-0 border">
+                      <Image
+                        src={item.product.image}
+                        alt={item.product.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground line-clamp-1">
+                        {item.product.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Qty: {item.quantity} × ${item.product.price.toFixed(2)}
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-foreground flex-shrink-0">
+                      ${(item.product.price * item.quantity).toFixed(2)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+
+              <Separator />
+
+              {/* Totals */}
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal ({itemCount} items)</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Shipping</span>
+                  <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                    {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-bold text-base text-foreground">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Place order */}
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full gap-2"
+                disabled={!canSubmit}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Placing Order…
+                  </>
+                ) : (
+                  'Place Order'
+                )}
+              </Button>
+
+              <p className="text-xs text-muted-foreground text-center">
+                By placing this order you agree to our terms and conditions.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       </form>
     </div>
   )

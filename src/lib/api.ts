@@ -154,6 +154,16 @@ export const getProduct = async (id: string): Promise<Product> =>
 
 // ─── Order types & helpers ───────────────────────────────────────
 
+export interface ShippingAddress {
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;
@@ -177,17 +187,7 @@ export interface OrderStatus {
   customerEmail: string;
   status: string;
   totalAmount: number;
-  shippingAddress: {
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  } | null;
-  trackingNumber: string | null;
-  carrier: string | null;
+  shippingAddress: ShippingAddress | string;
   items: OrderItem[];
   statusHistory?: OrderStatusHistoryEntry[];
   createdAt: string;
