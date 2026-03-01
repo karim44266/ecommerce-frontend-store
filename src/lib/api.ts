@@ -155,6 +155,7 @@ export const getProduct = async (id: string): Promise<Product> =>
 // ─── Order types & helpers ───────────────────────────────────────
 
 export interface OrderItem {
+  id: string;
   productId: string;
   name: string;
   quantity: number;
@@ -163,12 +164,36 @@ export interface OrderItem {
 
 export interface OrderStatus {
   id: string;
+  userId: string;
   status: string;
   totalAmount: number;
+  shippingAddress: string;
   items: OrderItem[];
   createdAt: string;
   updatedAt: string;
 }
+
+interface OrdersListResponse {
+  data: OrderStatus[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+interface CreateOrderPayload {
+  items: { productId: string; quantity: number }[];
+  shippingAddress: string;
+}
+
+export const createOrder = async (payload: CreateOrderPayload): Promise<OrderStatus> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiPost<OrderStatus>('/orders', payload, token);
+};
+
+export const getOrders = async (page = 1, limit = 20): Promise<OrdersListResponse> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiGet<OrdersListResponse>(`/orders?page=${page}&limit=${limit}`, token);
+};
 
 export const getOrder = async (id: string): Promise<OrderStatus> => {
   const token = getStoredToken();
