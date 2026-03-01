@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [orderPlaced, setOrderPlaced] = useState(false)
 
   const [address, setAddress] = useState({
     fullName: '',
@@ -46,7 +47,7 @@ export default function CheckoutPage() {
     return null
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !orderPlaced) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center space-y-4">
         <ShoppingBag className="h-12 w-12 text-muted-foreground/40 mx-auto" />
@@ -80,6 +81,7 @@ export default function CheckoutPage() {
           addressLine2: address.addressLine2 || undefined,
         },
       })
+      setOrderPlaced(true)
       clearCart()
       router.push(`/orders/${order.id}`)
     } catch (err) {

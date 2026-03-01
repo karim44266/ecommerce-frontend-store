@@ -165,18 +165,6 @@ export default function OrderTrackingPage() {
         </CardContent>
       </Card>
 
-      {/* Shipping address */}
-      {order.shippingAddress && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-foreground">{order.shippingAddress}</p>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Order summary */}
       <Card>
         <CardHeader>
