@@ -162,9 +162,11 @@ export default function CartPage() {
               </div>
 
               {user ? (
-                <Button size="lg" className="w-full gap-2">
-                  Proceed to Checkout <ArrowRight className="h-4 w-4" />
-                </Button>
+                <Link href="/checkout">
+                  <Button size="lg" className="w-full gap-2">
+                    Proceed to Checkout <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               ) : (
                 <div className="space-y-2">
                   <Link href="/login">
