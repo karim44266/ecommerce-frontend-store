@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ShoppingCart, User, LogOut, Search, Package, Menu } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Search, Package, Menu, ClipboardList } from 'lucide-react'
 import { useState } from 'react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
@@ -118,6 +118,11 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push('/orders')}>
+                    <ClipboardList className="mr-2 h-4 w-4" />
+                    My Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
@@ -192,6 +197,14 @@ export function Header() {
                   {user ? (
                     <div className="space-y-3">
                       <p className="text-sm text-muted-foreground truncate px-3">{user.email}</p>
+                      <Link
+                        href="/orders"
+                        onClick={() => setSheetOpen(false)}
+                        className="flex items-center gap-2 py-2 px-3 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <ClipboardList className="h-4 w-4" />
+                        My Orders
+                      </Link>
                       <Button variant="outline" size="sm" className="w-full" onClick={() => { logout(); setSheetOpen(false) }}>
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign out

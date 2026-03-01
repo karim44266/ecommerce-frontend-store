@@ -155,23 +155,82 @@ export const getProduct = async (id: string): Promise<Product> =>
 // ─── Order types & helpers ───────────────────────────────────────
 
 export interface OrderItem {
+  id: string;
   productId: string;
   name: string;
   quantity: number;
   unitPrice: number;
 }
 
+export interface OrderStatusHistoryEntry {
+  id: string;
+  status: string;
+  note: string | null;
+  changedBy: string | null;
+  changedByEmail: string | null;
+  createdAt: string;
+}
+
 export interface OrderStatus {
+  id: string;
+  userId: string;
+  customerEmail: string;
+  status: string;
+  totalAmount: number;
+  shippingAddress: {
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  } | null;
+  trackingNumber: string | null;
+  carrier: string | null;
+  items: OrderItem[];
+  statusHistory?: OrderStatusHistoryEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderSummary {
   id: string;
   status: string;
   totalAmount: number;
-  items: OrderItem[];
+  trackingNumber: string | null;
+  carrier: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateOrderPayload {
+  items: { productId: string; quantity: number }[];
+  shippingAddress: {
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
 }
 
 export const getOrder = async (id: string): Promise<OrderStatus> => {
   const token = getStoredToken();
   if (!token) throw new Error('Not authenticated');
   return apiGet<OrderStatus>(`/orders/${id}`, token);
+};
+
+export const getOrders = async (page = 1, limit = 10): Promise<PaginatedResponse<OrderSummary>> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiGet<PaginatedResponse<OrderSummary>>(`/orders?page=${page}&limit=${limit}`, token);
+};
+
+export const createOrder = async (payload: CreateOrderPayload): Promise<OrderStatus> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiPost<OrderStatus>('/orders', payload, token);
 };

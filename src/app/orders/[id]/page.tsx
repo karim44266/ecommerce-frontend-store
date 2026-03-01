@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft,
+  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft, MapPin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -83,12 +83,12 @@ export default function OrderTrackingPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Back */}
-      <button
-        onClick={() => router.back()}
+      <Link
+        href="/orders"
         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
+        <ArrowLeft className="h-4 w-4" /> Back to Orders
+      </Link>
 
       {/* Header */}
       <div className="space-y-1">
@@ -173,7 +173,7 @@ export default function OrderTrackingPage() {
         <CardContent className="space-y-4">
           <ul className="divide-y divide-border">
             {order.items.map((item) => (
-              <li key={item.productId} className="flex justify-between items-center py-3 text-sm">
+              <li key={item.id || item.productId} className="flex justify-between items-center py-3 text-sm">
                 <div>
                   <p className="font-medium text-foreground">{item.name}</p>
                   <p className="text-muted-foreground">Qty: {item.quantity}</p>
@@ -191,6 +191,94 @@ export default function OrderTrackingPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Shipping & Tracking */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        {order.shippingAddress && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" /> Shipping Address
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm space-y-0.5">
+              <p className="font-semibold">{order.shippingAddress.fullName}</p>
+              <p className="text-muted-foreground">{order.shippingAddress.addressLine1}</p>
+              {order.shippingAddress.addressLine2 && (
+                <p className="text-muted-foreground">{order.shippingAddress.addressLine2}</p>
+              )}
+              <p className="text-muted-foreground">
+                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
+              </p>
+              <p className="text-muted-foreground">{order.shippingAddress.country}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {(order.carrier || order.trackingNumber) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Truck className="h-4 w-4" /> Tracking Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm space-y-2">
+              {order.carrier && (
+                <div>
+                  <span className="text-muted-foreground">Carrier: </span>
+                  <span className="font-medium">{order.carrier}</span>
+                </div>
+              )}
+              {order.trackingNumber && (
+                <div>
+                  <span className="text-muted-foreground">Tracking #: </span>
+                  <code className="font-mono text-foreground/70">{order.trackingNumber}</code>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Status History */}
+      {order.statusHistory && order.statusHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Status History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-0">
+              {order.statusHistory.map((entry, idx) => {
+                const isLast = idx === order.statusHistory!.length - 1
+                return (
+                  <div key={entry.id} className="flex items-start gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className={cn(
+                        'w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0',
+                        isLast ? 'bg-primary' : 'bg-muted-foreground/30',
+                      )} />
+                      {!isLast && <div className="w-0.5 h-8 bg-border mt-0.5" />}
+                    </div>
+                    <div className="pb-3">
+                      <p className="text-sm">
+                        <Badge variant={isLast ? 'default' : 'secondary'} className="text-xs mr-2">
+                          {entry.status}
+                        </Badge>
+                        <span className="text-muted-foreground text-xs">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </span>
+                      </p>
+                      {entry.note && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{entry.note}</p>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Link href="/products">
         <Button variant="outline" className="w-full">Continue Shopping</Button>
