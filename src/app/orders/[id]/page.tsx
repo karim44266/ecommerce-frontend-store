@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft,
+  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft, MapPin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,6 +14,16 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import { getOrder, type OrderStatus } from '@/lib/api'
 import { cn } from '@/lib/utils'
+
+interface ShippingAddress {
+  fullName: string
+  addressLine1: string
+  addressLine2?: string
+  city: string
+  state: string
+  postalCode: string
+  country: string
+}
 
 const STATUS_STEPS = [
   { key: 'PENDING_PAYMENT', label: 'Order Placed', icon: Clock },
@@ -83,12 +93,12 @@ export default function OrderTrackingPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Back */}
-      <button
-        onClick={() => router.back()}
+      <Link
+        href="/orders"
         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
+        <ArrowLeft className="h-4 w-4" /> Back to My Orders
+      </Link>
 
       {/* Header */}
       <div className="space-y-1">
@@ -169,10 +179,26 @@ export default function OrderTrackingPage() {
       {order.shippingAddress && (
         <Card>
           <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" /> Shipping Address
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-foreground">{order.shippingAddress}</p>
+          <CardContent className="text-sm space-y-0.5">
+            {typeof order.shippingAddress === 'object' ? (
+              <>
+                <p className="font-semibold">{(order.shippingAddress as ShippingAddress).fullName}</p>
+                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine1}</p>
+                {(order.shippingAddress as ShippingAddress).addressLine2 && (
+                  <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine2}</p>
+                )}
+                <p className="text-muted-foreground">
+                  {(order.shippingAddress as ShippingAddress).city}, {(order.shippingAddress as ShippingAddress).state} {(order.shippingAddress as ShippingAddress).postalCode}
+                </p>
+                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).country}</p>
+              </>
+            ) : (
+              <p className="text-foreground">{String(order.shippingAddress)}</p>
+            )}
           </CardContent>
         </Card>
       )}

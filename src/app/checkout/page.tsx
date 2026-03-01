@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -19,12 +19,20 @@ export default function CheckoutPage() {
   const { items, itemCount, subtotal, clearCart } = useCart()
   const { user, loading: authLoading } = useAuth()
 
-  const [address, setAddress] = useState('')
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
-  const [zip, setZip] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [address, setAddress] = useState({
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'US',
+  })
+
+  const updateField = (field: string, value: string) =>
+    setAddress((prev) => ({ ...prev, [field]: value }))
 
   const shipping = subtotal >= 50 ? 0 : 5.99
   const total = subtotal + shipping
@@ -41,17 +49,27 @@ export default function CheckoutPage() {
     return null
   }
 
-  const fullAddress = [address, city, state, zip].filter(Boolean).join(', ')
-
   const canSubmit =
-    address.trim().length > 0 &&
-    city.trim().length > 0 &&
-    state.trim().length > 0 &&
-    zip.trim().length > 0 &&
+    address.fullName.trim().length > 0 &&
+    address.addressLine1.trim().length > 0 &&
+    address.city.trim().length > 0 &&
+    address.state.trim().length > 0 &&
+    address.postalCode.trim().length > 0 &&
     !submitting
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (e: FormEvent) => {
+    e.preventDefault()
     if (!canSubmit) return
+    if (
+      !address.fullName ||
+      !address.addressLine1 ||
+      !address.city ||
+      !address.state ||
+      !address.postalCode
+    ) {
+      setError('Please fill in all required address fields.')
+      return
+    }
     setError('')
     setSubmitting(true)
 
@@ -61,7 +79,10 @@ export default function CheckoutPage() {
           productId: item.product.id,
           quantity: item.quantity,
         })),
-        shippingAddress: fullAddress,
+        shippingAddress: {
+          ...address,
+          addressLine2: address.addressLine2 || undefined,
+        },
       })
       clearCart()
       router.push(`/orders/${order.id}`)
@@ -98,57 +119,93 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* Shipping form */}
-        <div className="lg:col-span-3 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" /> Shipping Address
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="address">Street Address</Label>
-                <Input
-                  id="address"
-                  placeholder="123 Main Street, Apt 4"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handlePlaceOrder}>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Shipping form */}
+          <div className="lg:col-span-3 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" /> Shipping Address
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
+                  <Label htmlFor="fullName">Full Name</Label>
                   <Input
-                    id="city"
-                    placeholder="New York"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    id="fullName"
+                    placeholder="John Doe"
+                    value={address.fullName}
+                    onChange={(e) => updateField('fullName', e.target.value)}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state">State</Label>
+                  <Label htmlFor="addressLine1">Address Line 1</Label>
                   <Input
-                    id="state"
-                    placeholder="NY"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
+                    id="addressLine1"
+                    placeholder="123 Main Street"
+                    value={address.addressLine1}
+                    onChange={(e) => updateField('addressLine1', e.target.value)}
+                    required
                   />
                 </div>
-              </div>
-              <div className="w-1/2 space-y-2">
-                <Label htmlFor="zip">ZIP Code</Label>
-                <Input
-                  id="zip"
-                  placeholder="10001"
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressLine2">Address Line 2 (optional)</Label>
+                  <Input
+                    id="addressLine2"
+                    placeholder="Apt, Suite, Unit, etc."
+                    value={address.addressLine2}
+                    onChange={(e) => updateField('addressLine2', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      placeholder="New York"
+                      value={address.city}
+                      onChange={(e) => updateField('city', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      placeholder="NY"
+                      value={address.state}
+                      onChange={(e) => updateField('state', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="postalCode">ZIP / Postal Code</Label>
+                    <Input
+                      id="postalCode"
+                      placeholder="10001"
+                      value={address.postalCode}
+                      onChange={(e) => updateField('postalCode', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      placeholder="US"
+                      value={address.country}
+                      onChange={(e) => updateField('country', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
         {/* Order summary */}
         <div className="lg:col-span-2 space-y-4">
@@ -210,10 +267,10 @@ export default function CheckoutPage() {
 
               {/* Place order */}
               <Button
+                type="submit"
                 size="lg"
                 className="w-full gap-2"
                 disabled={!canSubmit}
-                onClick={handlePlaceOrder}
               >
                 {submitting ? (
                   <>
@@ -231,6 +288,7 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </div>
+      </form>
     </div>
   )
 }

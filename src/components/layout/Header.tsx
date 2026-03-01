@@ -45,6 +45,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
+    { href: '/orders', label: 'My Orders' },
   ]
 
   return (
@@ -118,6 +119,10 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push('/orders')}>
+                    <Package className="mr-2 h-4 w-4" />
+                    My Orders
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out

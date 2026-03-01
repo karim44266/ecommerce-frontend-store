@@ -154,6 +154,16 @@ export const getProduct = async (id: string): Promise<Product> =>
 
 // ─── Order types & helpers ───────────────────────────────────────
 
+export interface ShippingAddress {
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;
@@ -167,7 +177,7 @@ export interface OrderStatus {
   userId: string;
   status: string;
   totalAmount: number;
-  shippingAddress: string;
+  shippingAddress: ShippingAddress | string;
   items: OrderItem[];
   createdAt: string;
   updatedAt: string;
@@ -180,7 +190,15 @@ interface OrdersListResponse {
 
 interface CreateOrderPayload {
   items: { productId: string; quantity: number }[];
-  shippingAddress: string;
+  shippingAddress: {
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
 }
 
 export const createOrder = async (payload: CreateOrderPayload): Promise<OrderStatus> => {
