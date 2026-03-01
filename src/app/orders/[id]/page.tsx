@@ -15,6 +15,16 @@ import { useAuth } from '@/context/AuthContext'
 import { getOrder, type OrderStatus } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
+interface ShippingAddress {
+  fullName: string
+  addressLine1: string
+  addressLine2?: string
+  city: string
+  state: string
+  postalCode: string
+  country: string
+}
+
 const STATUS_STEPS = [
   { key: 'PENDING_PAYMENT', label: 'Order Placed', icon: Clock },
   { key: 'PAID', label: 'Payment Confirmed', icon: CheckCircle2 },
@@ -87,7 +97,7 @@ export default function OrderTrackingPage() {
         href="/orders"
         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Orders
+        <ArrowLeft className="h-4 w-4" /> Back to My Orders
       </Link>
 
       {/* Header */}
@@ -164,6 +174,34 @@ export default function OrderTrackingPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Shipping address */}
+      {order.shippingAddress && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" /> Shipping Address
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-0.5">
+            {typeof order.shippingAddress === 'object' ? (
+              <>
+                <p className="font-semibold">{(order.shippingAddress as ShippingAddress).fullName}</p>
+                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine1}</p>
+                {(order.shippingAddress as ShippingAddress).addressLine2 && (
+                  <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine2}</p>
+                )}
+                <p className="text-muted-foreground">
+                  {(order.shippingAddress as ShippingAddress).city}, {(order.shippingAddress as ShippingAddress).state} {(order.shippingAddress as ShippingAddress).postalCode}
+                </p>
+                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).country}</p>
+              </>
+            ) : (
+              <p className="text-foreground">{String(order.shippingAddress)}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Order summary */}
       <Card>
