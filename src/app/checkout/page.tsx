@@ -3,20 +3,18 @@
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft, Loader2, MapPin, ShoppingBag } from 'lucide-react'
+import { ArrowLeft, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
+import { useCart } from '@/context/CartContext'
 import { createOrder } from '@/lib/api'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, itemCount, subtotal, clearCart } = useCart()
   const { user, loading: authLoading } = useAuth()
 
   const [submitting, setSubmitting] = useState(false)
@@ -34,18 +32,29 @@ export default function CheckoutPage() {
   const updateField = (field: string, value: string) =>
     setAddress((prev) => ({ ...prev, [field]: value }))
 
-  const shipping = subtotal >= 50 ? 0 : 5.99
-  const total = subtotal + shipping
+  const [address, setAddress] = useState({
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'US',
+  })
 
-  // Redirect to login if not authenticated
-  if (!authLoading && !user) {
-    router.push('/login?redirect=/checkout')
-    return null
+  const updateField = (field: string, value: string) =>
+    setAddress((prev) => ({ ...prev, [field]: value }))
+
+  if (authLoading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
+        <div className="h-8 w-8 border-4 border-muted border-t-foreground rounded-full animate-spin mx-auto" />
+      </div>
+    )
   }
 
-  // Redirect to cart if cart is empty
-  if (!authLoading && itemCount === 0) {
-    router.push('/cart')
+  if (!user) {
+    router.push('/login?redirect=/checkout')
     return null
   }
 
@@ -72,12 +81,13 @@ export default function CheckoutPage() {
     }
     setError('')
     setSubmitting(true)
+    setError('')
 
     try {
       const order = await createOrder({
-        items: items.map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
+        items: items.map((i) => ({
+          productId: i.product.id,
+          quantity: i.quantity,
         })),
         shippingAddress: {
           ...address,
@@ -93,28 +103,19 @@ export default function CheckoutPage() {
     }
   }
 
-  if (authLoading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-24 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    )
-  }
-
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Back to cart */}
-      <Link
-        href="/cart"
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to cart
-      </Link>
+        <ArrowLeft className="h-4 w-4" /> Back
+      </button>
 
-      <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
+      <h1 className="text-2xl font-bold text-foreground">Checkout</h1>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="bg-destructive/10 text-destructive p-3 rounded-lg text-sm">
           {error}
         </div>
       )}
