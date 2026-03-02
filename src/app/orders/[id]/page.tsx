@@ -175,34 +175,6 @@ export default function OrderTrackingPage() {
         </CardContent>
       </Card>
 
-      {/* Shipping address */}
-      {order.shippingAddress && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> Shipping Address
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm space-y-0.5">
-            {typeof order.shippingAddress === 'object' ? (
-              <>
-                <p className="font-semibold">{(order.shippingAddress as ShippingAddress).fullName}</p>
-                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine1}</p>
-                {(order.shippingAddress as ShippingAddress).addressLine2 && (
-                  <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine2}</p>
-                )}
-                <p className="text-muted-foreground">
-                  {(order.shippingAddress as ShippingAddress).city}, {(order.shippingAddress as ShippingAddress).state} {(order.shippingAddress as ShippingAddress).postalCode}
-                </p>
-                <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).country}</p>
-              </>
-            ) : (
-              <p className="text-foreground">{String(order.shippingAddress)}</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
       {/* Order summary */}
       <Card>
         <CardHeader>
@@ -240,15 +212,21 @@ export default function OrderTrackingPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm space-y-0.5">
-              <p className="font-semibold">{order.shippingAddress.fullName}</p>
-              <p className="text-muted-foreground">{order.shippingAddress.addressLine1}</p>
-              {order.shippingAddress.addressLine2 && (
-                <p className="text-muted-foreground">{order.shippingAddress.addressLine2}</p>
+              {typeof order.shippingAddress === 'object' ? (
+                <>
+                  <p className="font-semibold">{(order.shippingAddress as ShippingAddress).fullName}</p>
+                  <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine1}</p>
+                  {(order.shippingAddress as ShippingAddress).addressLine2 && (
+                    <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).addressLine2}</p>
+                  )}
+                  <p className="text-muted-foreground">
+                    {(order.shippingAddress as ShippingAddress).city}, {(order.shippingAddress as ShippingAddress).state} {(order.shippingAddress as ShippingAddress).postalCode}
+                  </p>
+                  <p className="text-muted-foreground">{(order.shippingAddress as ShippingAddress).country}</p>
+                </>
+              ) : (
+                <p className="text-foreground">{String(order.shippingAddress)}</p>
               )}
-              <p className="text-muted-foreground">
-                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
-              </p>
-              <p className="text-muted-foreground">{order.shippingAddress.country}</p>
             </CardContent>
           </Card>
         )}

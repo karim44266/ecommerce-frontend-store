@@ -188,6 +188,8 @@ export interface OrderStatus {
   status: string;
   totalAmount: number;
   shippingAddress: ShippingAddress | string;
+  trackingNumber: string | null;
+  carrier: string | null;
   items: OrderItem[];
   statusHistory?: OrderStatusHistoryEntry[];
   createdAt: string;
@@ -200,6 +202,7 @@ export interface OrderSummary {
   totalAmount: number;
   trackingNumber: string | null;
   carrier: string | null;
+  items: OrderItem[];
   createdAt: string;
   updatedAt: string;
 }
