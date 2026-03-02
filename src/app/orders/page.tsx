@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
-import { getOrders, type OrderStatus } from '@/lib/api'
+import { getOrders, type OrderSummary } from '@/lib/api'
 
 /* ── Status display helpers ──────────────────────────────────────── */
 
@@ -47,7 +47,7 @@ export default function OrdersListPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
 
-  const [orders, setOrders] = useState<OrderStatus[]>([])
+  const [orders, setOrders] = useState<OrderSummary[]>([])
   const [meta, setMeta] = useState({ total: 0, page: 1, totalPages: 1 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')

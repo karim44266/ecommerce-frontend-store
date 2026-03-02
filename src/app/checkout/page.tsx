@@ -3,7 +3,8 @@
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ShoppingBag } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, ShoppingBag, MapPin, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,9 +17,11 @@ import { createOrder } from '@/lib/api'
 export default function CheckoutPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
+  const { items, subtotal, itemCount, clearCart } = useCart()
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [orderPlaced, setOrderPlaced] = useState(false)
   const [address, setAddress] = useState({
     fullName: '',
     addressLine1: '',
@@ -32,18 +35,9 @@ export default function CheckoutPage() {
   const updateField = (field: string, value: string) =>
     setAddress((prev) => ({ ...prev, [field]: value }))
 
-  const [address, setAddress] = useState({
-    fullName: '',
-    addressLine1: '',
-    addressLine2: '',
-    city: '',
-    state: '',
-    postalCode: '',
-    country: 'US',
-  })
-
-  const updateField = (field: string, value: string) =>
-    setAddress((prev) => ({ ...prev, [field]: value }))
+  const shipping = subtotal >= 50 ? 0 : 9.99
+  const total = subtotal + shipping
+  const canSubmit = !submitting && items.length > 0
 
   if (authLoading) {
     return (
