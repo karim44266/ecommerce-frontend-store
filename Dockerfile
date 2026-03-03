@@ -16,6 +16,9 @@ FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
+ARG API_BASE_URL
+ENV API_BASE_URL=$API_BASE_URL
+
 COPY --from=build /app ./
 
 EXPOSE 3000

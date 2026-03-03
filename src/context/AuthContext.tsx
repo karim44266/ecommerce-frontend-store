@@ -16,6 +16,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<{ mfaRequired?: boolean }>
   register: (email: string, password: string) => Promise<void>
   logout: () => void
+  setTokenAndLoadUser: (accessToken: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -69,8 +70,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }, [])
 
+  const setTokenAndLoadUser = useCallback(async (accessToken: string) => {
+    localStorage.setItem('store_token', accessToken)
+    setToken(accessToken)
+    const me = await getMe()
+    setUser(me)
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, setTokenAndLoadUser }}>
       {children}
     </AuthContext.Provider>
   )

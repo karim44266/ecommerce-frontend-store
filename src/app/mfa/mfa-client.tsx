@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiPost } from '@/lib/api';
-import { setStoreToken } from '@/lib/auth';
+import { useAuth } from '@/context/AuthContext';
 
 type MfaResponse = {
   accessToken: string;
@@ -14,6 +14,7 @@ type MfaResponse = {
 export default function MfaClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setTokenAndLoadUser } = useAuth();
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +32,7 @@ export default function MfaClient() {
     try {
       const response = await apiPost<MfaResponse>('/auth/mfa/verify', { email, otp });
       if (response.accessToken) {
-        setStoreToken(response.accessToken);
+        await setTokenAndLoadUser(response.accessToken);
         sessionStorage.removeItem('mfa_email');
         router.replace('/');
         return;

@@ -4,16 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { apiPost } from '@/lib/api';
-import { setStoreToken } from '@/lib/auth';
-
-type LoginResponse = {
-  accessToken?: string;
-  mfaRequired?: boolean;
-};
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,20 +20,15 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await apiPost<LoginResponse>('/auth/login', { email, password });
-      if (response.accessToken) {
-        setStoreToken(response.accessToken);
-        router.replace('/');
-        return;
-      }
+      const result = await login(email, password);
 
-      if (response.mfaRequired) {
+      if (result.mfaRequired) {
         sessionStorage.setItem('mfa_email', email);
         router.push(`/mfa?email=${encodeURIComponent(email)}`);
         return;
       }
 
-      setError('Unexpected response from server.');
+      router.replace('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in.');
     } finally {
