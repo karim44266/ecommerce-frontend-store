@@ -18,14 +18,14 @@ import { getOrders, type OrderSummary } from '@/lib/api'
 /* ── Status display helpers ──────────────────────────────────────── */
 
 const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: React.ElementType }> = {
-  PENDING_PAYMENT: { label: 'Pending Payment', variant: 'outline', icon: Clock },
-  PAID:            { label: 'Paid',            variant: 'default', icon: CheckCircle2 },
-  PROCESSING:      { label: 'Processing',      variant: 'secondary', icon: Package },
-  SHIPPED:         { label: 'Shipped',          variant: 'default', icon: Truck },
-  DELIVERED:       { label: 'Delivered',        variant: 'default', icon: CheckCircle2 },
-  CANCELLED:       { label: 'Cancelled',        variant: 'destructive', icon: XCircle },
-  REFUNDED:        { label: 'Refunded',         variant: 'destructive', icon: XCircle },
-  FAILED:          { label: 'Failed',           variant: 'destructive', icon: XCircle },
+  PENDING:    { label: 'Pending',    variant: 'outline',      icon: Clock },
+  ACCEPTED:   { label: 'Accepted',   variant: 'default',      icon: CheckCircle2 },
+  PROCESSING: { label: 'Processing', variant: 'secondary',    icon: Package },
+  DELIVERED:  { label: 'Delivered',  variant: 'default',      icon: CheckCircle2 },
+  COMPLETED:  { label: 'Completed',  variant: 'default',      icon: CheckCircle2 },
+  CANCELLED:  { label: 'Cancelled',  variant: 'destructive',  icon: XCircle },
+  REFUNDED:   { label: 'Refunded',   variant: 'destructive',  icon: XCircle },
+  FAILED:     { label: 'Failed',     variant: 'destructive',  icon: XCircle },
 }
 
 function statusBadge(status: string) {

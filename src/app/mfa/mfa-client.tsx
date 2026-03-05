@@ -24,6 +24,10 @@ export default function MfaClient() {
     return queryEmail || sessionStorage.getItem('mfa_email') || '';
   }, [searchParams]);
 
+  const redirectTo = useMemo(() => {
+    return sessionStorage.getItem('mfa_redirect') || '/';
+  }, []);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -34,7 +38,8 @@ export default function MfaClient() {
       if (response.accessToken) {
         await setTokenAndLoadUser(response.accessToken);
         sessionStorage.removeItem('mfa_email');
-        router.replace('/');
+        sessionStorage.removeItem('mfa_redirect');
+        router.replace(redirectTo);
         return;
       }
 

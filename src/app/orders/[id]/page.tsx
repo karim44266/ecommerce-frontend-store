@@ -26,10 +26,9 @@ interface ShippingAddress {
 }
 
 const STATUS_STEPS = [
-  { key: 'PENDING_PAYMENT', label: 'Order Placed', icon: Clock },
-  { key: 'PAID', label: 'Payment Confirmed', icon: CheckCircle2 },
+  { key: 'PENDING', label: 'Order Placed', icon: Clock },
+  { key: 'ACCEPTED', label: 'Confirmed', icon: CheckCircle2 },
   { key: 'PROCESSING', label: 'Processing', icon: Package },
-  { key: 'SHIPPED', label: 'Shipped', icon: Truck },
   { key: 'DELIVERED', label: 'Delivered', icon: CheckCircle2 },
 ]
 
