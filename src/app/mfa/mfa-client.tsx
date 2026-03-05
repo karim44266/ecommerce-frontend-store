@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiPost } from '@/lib/api';
-import { setStoreToken } from '@/lib/auth';
+import { useAuth } from '@/context/AuthContext';
 
 type MfaResponse = {
   accessToken: string;
@@ -14,6 +14,7 @@ type MfaResponse = {
 export default function MfaClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setTokenAndLoadUser } = useAuth();
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -23,6 +24,10 @@ export default function MfaClient() {
     return queryEmail || sessionStorage.getItem('mfa_email') || '';
   }, [searchParams]);
 
+  const redirectTo = useMemo(() => {
+    return sessionStorage.getItem('mfa_redirect') || '/';
+  }, []);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -31,9 +36,10 @@ export default function MfaClient() {
     try {
       const response = await apiPost<MfaResponse>('/auth/mfa/verify', { email, otp });
       if (response.accessToken) {
-        setStoreToken(response.accessToken);
+        await setTokenAndLoadUser(response.accessToken);
         sessionStorage.removeItem('mfa_email');
-        router.replace('/');
+        sessionStorage.removeItem('mfa_redirect');
+        router.replace(redirectTo);
         return;
       }
 
