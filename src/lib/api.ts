@@ -1,6 +1,11 @@
 type ApiErrorPayload = { message?: string | string[] };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+// Server components run inside Docker and need the internal service name.
+// Client components run in the browser and need the public URL.
+const API_BASE_URL =
+  (typeof window === 'undefined'
+    ? process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL
+    : process.env.NEXT_PUBLIC_API_BASE_URL) ?? 'http://localhost:3000';
 
 const buildErrorMessage = async (response: Response) => {
   try {
@@ -71,7 +76,7 @@ export interface Product {
   updatedAt: string;
 }
 
-interface PaginatedResponse<T> {
+export interface PaginatedResponse<T> {
   data: T[];
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
@@ -130,23 +135,40 @@ export const getMe = async (): Promise<MeResponse> => {
 
 // ─── Product helpers ─────────────────────────────────────────────
 
-interface GetProductsParams {
+export type SortBy = 'createdAt' | 'name' | 'price';
+export type SortOrder = 'asc' | 'desc';
+
+export interface GetProductsParams {
   search?: string;
   category?: string;
+  sortBy?: SortBy;
+  sortOrder?: SortOrder;
   page?: number;
   limit?: number;
 }
 
-export const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
+const buildProductQuery = (params?: GetProductsParams): string => {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.category) query.set('category', params.category);
+  if (params?.sortBy) query.set('sortBy', params.sortBy);
+  if (params?.sortOrder) query.set('sortOrder', params.sortOrder);
   if (params?.page) query.set('page', String(params.page));
   if (params?.limit) query.set('limit', String(params.limit));
+  return query.toString();
+};
 
-  const qs = query.toString();
+export const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
+  const qs = buildProductQuery(params);
   const res = await apiGet<PaginatedResponse<Product>>(`/products${qs ? `?${qs}` : ''}`);
   return res.data;
+};
+
+export const getProductsPaginated = async (
+  params?: GetProductsParams,
+): Promise<PaginatedResponse<Product>> => {
+  const qs = buildProductQuery(params);
+  return apiGet<PaginatedResponse<Product>>(`/products${qs ? `?${qs}` : ''}`);
 };
 
 export const getProduct = async (id: string): Promise<Product> =>
