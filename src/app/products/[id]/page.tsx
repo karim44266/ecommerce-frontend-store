@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   ShoppingCart, ArrowLeft, Minus, Plus, Package,
-  Truck, ShieldCheck, RotateCcw,
+  Truck, ShieldCheck, RotateCcw, CheckCircle2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -74,38 +74,41 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-4">
-        <p className="text-4xl">😕</p>
-        <h1 className="text-2xl font-bold text-foreground">Product not found</h1>
-        <p className="text-muted-foreground">This item may have been removed or doesn&apos;t exist.</p>
+        <Package className="h-12 w-12 text-muted-foreground/30 mx-auto" />
+        <h1 className="font-display text-2xl font-bold text-foreground uppercase">Product Not Found</h1>
+        <p className="text-muted-foreground text-sm">This item may have been removed or doesn&apos;t exist.</p>
         <Button onClick={() => router.push('/products')}>Browse Products</Button>
       </div>
     )
   }
 
+  const inStock = product.stock > 0
+  const lowStock = product.stock > 0 && product.stock <= 5
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-14">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">Home</Link>
-        <span>/</span>
-        <Link href="/products" className="hover:text-foreground">Products</Link>
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <span className="text-muted-foreground/40">/</span>
+        <Link href="/products" className="hover:text-foreground transition-colors">Products</Link>
         {product.category && (
           <>
-            <span>/</span>
-            <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-foreground">
+            <span className="text-muted-foreground/40">/</span>
+            <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-foreground transition-colors">
               {product.category}
             </Link>
           </>
         )}
-        <span>/</span>
+        <span className="text-muted-foreground/40">/</span>
         <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
       </nav>
 
       {/* Main product section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
         {/* Image */}
-        <Card className="overflow-hidden py-0">
-          <div className="relative aspect-square bg-neutral-50">
+        <Card className="overflow-hidden py-0 border-border">
+          <div className="relative aspect-square bg-muted/30">
             <Image
               src={product.image}
               alt={product.name}
@@ -118,60 +121,66 @@ export default function ProductDetailPage() {
         </Card>
 
         {/* Info */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div>
             {product.category && (
-              <Badge variant="secondary" className="mb-2 uppercase tracking-wider text-xs">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
                 {product.category}
-              </Badge>
+              </p>
             )}
-            <h1 className="text-3xl font-bold text-foreground leading-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground leading-tight uppercase tracking-tight">
               {product.name}
             </h1>
           </div>
 
           {/* SKU */}
-          <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
+          <p className="text-xs text-muted-foreground font-mono">SKU: {product.sku}</p>
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
-            <span className="text-4xl font-extrabold text-foreground">
+            <span className="text-3xl sm:text-4xl font-extrabold text-foreground hw-price">
               ${product.price.toFixed(2)}
             </span>
             <span className="text-sm text-muted-foreground line-through">
               ${(product.price * 1.2).toFixed(2)}
             </span>
-            <Badge className="bg-green-100 text-green-700 border-green-200">
+            <Badge className="bg-hw-green text-white border-0 text-xs font-bold uppercase">
               Save 17%
             </Badge>
           </div>
 
           {/* Description */}
-          <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+          <p className="text-muted-foreground leading-relaxed text-sm">{product.description}</p>
 
-          {/* Stock */}
-          <Badge variant={product.stock > 5 ? 'secondary' : product.stock > 0 ? 'outline' : 'destructive'} className="gap-1">
-            <Package className="h-3.5 w-3.5" />
-            {product.stock > 5
-              ? 'In stock'
-              : product.stock > 0
-              ? `Only ${product.stock} left in stock`
-              : 'Out of stock'}
-          </Badge>
+          {/* Stock status */}
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              'inline-block w-2 h-2 rounded-full',
+              inStock ? 'bg-hw-green' : 'bg-destructive',
+            )} />
+            <Badge variant={inStock ? (lowStock ? 'outline' : 'secondary') : 'destructive'} className="gap-1 text-xs">
+              <Package className="h-3 w-3" />
+              {product.stock > 5
+                ? 'In Stock — Ready to Ship'
+                : lowStock
+                ? `Only ${product.stock} left — Order soon`
+                : 'Out of Stock'}
+            </Badge>
+          </div>
 
           {/* Quantity + Add to cart */}
-          {product.stock > 0 && (
-            <div className="space-y-4">
+          {inStock && (
+            <div className="space-y-4 pt-2">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-foreground">Quantity</span>
-                <div className="flex items-center gap-1 border rounded-lg overflow-hidden">
+                <span className="text-sm font-semibold text-foreground">Qty</span>
+                <div className="flex items-center gap-0 border rounded-lg overflow-hidden">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="px-3 py-2 hover:bg-muted transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="w-10 text-center text-sm font-semibold">{quantity}</span>
+                  <span className="w-12 text-center text-sm font-bold border-x">{quantity}</span>
                   <button
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                     className="px-3 py-2 hover:bg-muted transition-colors"
@@ -185,13 +194,19 @@ export default function ProductDetailPage() {
                 <Button
                   size="lg"
                   onClick={handleAddToCart}
-                  className={cn('flex-1 gap-2 transition-all', added && 'bg-green-600 hover:bg-green-600')}
+                  className={cn(
+                    'flex-1 gap-2 text-sm font-semibold uppercase tracking-wide transition-all',
+                    added && 'bg-hw-green hover:bg-hw-green',
+                  )}
                 >
-                  <ShoppingCart className="h-5 w-5" />
-                  {added ? 'Added to cart!' : 'Add to Cart'}
+                  {added ? (
+                    <><CheckCircle2 className="h-5 w-5" /> Added to Cart!</>
+                  ) : (
+                    <><ShoppingCart className="h-5 w-5" /> Add to Cart</>
+                  )}
                 </Button>
                 <Link href="/cart" className="flex-shrink-0">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-sm">
                     View Cart
                   </Button>
                 </Link>
@@ -199,17 +214,19 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Trust */}
+          {/* Trust badges */}
           <Separator />
           <div className="grid grid-cols-3 gap-4">
             {[
-              { icon: <Truck className="h-4 w-4" />, label: 'Free shipping over $50' },
+              { icon: <Truck className="h-4 w-4" />, label: 'Free shipping $75+' },
               { icon: <RotateCcw className="h-4 w-4" />, label: '30-day returns' },
-              { icon: <ShieldCheck className="h-4 w-4" />, label: 'Secure checkout' },
+              { icon: <ShieldCheck className="h-4 w-4" />, label: 'Pro guaranteed' },
             ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center gap-1 text-center text-muted-foreground">
-                {item.icon}
-                <span className="text-xs">{item.label}</span>
+              <div key={item.label} className="flex flex-col items-center gap-1.5 text-center text-muted-foreground">
+                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+                  {item.icon}
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wide">{item.label}</span>
               </div>
             ))}
           </div>
@@ -219,11 +236,13 @@ export default function ProductDetailPage() {
       {/* Related products */}
       {related.length > 0 && (
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">{product.category ? `More in ${product.category}` : 'Related Products'}</h2>
+          <div className="flex items-end justify-between mb-6">
+            <h2 className="font-display text-xl font-bold text-foreground uppercase tracking-tight">
+              {product.category ? `More in ${product.category}` : 'Related Products'}
+            </h2>
             {product.category && (
               <Link href={`/products?category=${encodeURIComponent(product.category)}`}>
-                <Button variant="ghost" size="sm" className="gap-1">
+                <Button variant="ghost" size="sm" className="gap-1 text-primary">
                   View all <ArrowLeft className="h-3.5 w-3.5 rotate-180" />
                 </Button>
               </Link>

@@ -1,168 +1,236 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Package, Eye, EyeOff, Check } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Wrench, UserPlus, Eye, EyeOff, Loader2,
+  Truck, Calculator, ClipboardList, ShieldCheck, Percent, Headphones,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
 
-const PERKS = [
-  'Track your orders in real time',
-  'Faster checkout on future visits',
-  'Exclusive member-only deals',
-  'Easy returns and refunds',
+const PRO_PERKS = [
+  { icon: Percent, title: 'Volume Pricing', desc: 'Bulk discounts for contractors' },
+  { icon: ClipboardList, title: 'Job Tracking', desc: 'Organize orders by project' },
+  { icon: Truck, title: 'Priority Shipping', desc: 'Get materials on time, every time' },
+  { icon: Calculator, title: 'Quote Builder', desc: 'Estimate project costs easily' },
+  { icon: ShieldCheck, title: 'Pro Guarantee', desc: 'Extended warranty on power tools' },
+  { icon: Headphones, title: 'Dedicated Support', desc: 'Direct line to trade specialists' },
 ]
+
+function StrengthMeter({ password }: { password: string }) {
+  let score = 0
+  if (password.length >= 8) score++
+  if (/[A-Z]/.test(password)) score++
+  if (/[a-z]/.test(password)) score++
+  if (/\d/.test(password)) score++
+  if (/[^A-Za-z0-9]/.test(password)) score++
+
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Excellent']
+  const colors = ['', 'bg-destructive', 'bg-amber-500', 'bg-hw-yellow', 'bg-hw-green', 'bg-hw-green']
+
+  if (!password) return null
+
+  return (
+    <div className="mt-2 space-y-1.5">
+      <div className="flex gap-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${
+              i < score ? colors[score] : 'bg-muted'
+            }`}
+          />
+        ))}
+      </div>
+      <p className={`text-[11px] font-semibold ${score <= 2 ? 'text-destructive' : 'text-hw-green'}`}>
+        {labels[score]}
+      </p>
+    </div>
+  )
+}
 
 export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuth()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [confirm, setConfirm] = useState('')
+  const [showPw, setShowPw] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [submitting, setSubmitting] = useState(false)
 
-  const passwordStrength = () => {
-    if (password.length === 0) return null
-    if (password.length < 6) return { label: 'Too short', color: 'text-red-500', width: '25%', barColor: '#ef4444' }
-    if (password.length < 8) return { label: 'Weak', color: 'text-amber-500', width: '50%', barColor: '#f59e0b' }
-    if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) return { label: 'Fair', color: 'text-yellow-500', width: '70%', barColor: '#eab308' }
-    return { label: 'Strong', color: 'text-green-600', width: '100%', barColor: '#16a34a' }
-  }
-
-  const strength = passwordStrength()
+  const passwordsMatch = password === confirm
+  const canSubmit = email && password.length >= 8 && passwordsMatch
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
-      return
-    }
-    setSubmitting(true)
+    if (!canSubmit) return
+    setLoading(true)
     setError('')
     try {
       await register(email, password)
       router.push('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Registration failed')
     } finally {
-      setSubmitting(false)
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-16">
-      <Card className="w-full max-w-4xl overflow-hidden py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-          {/* Left panel — form */}
-          <CardContent className="p-8 space-y-6">
-            <div className="flex items-center gap-2">
-              <Package className="h-6 w-6 text-foreground" />
-              <span className="text-xl font-bold text-foreground">ShopNow</span>
-            </div>
-
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
-              <p className="text-sm text-muted-foreground mt-1">Free forever. No credit card required.</p>
-            </div>
-
-            {error && (
-              <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
-                {error}
+    <div className="min-h-[70vh] flex items-stretch">
+      {/* Left panel — Form */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          {/* Brand */}
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white">
+                <Wrench className="h-6 w-6" />
               </div>
-            )}
+              <span className="font-display text-2xl font-bold uppercase tracking-tight text-hw-dark dark:text-white">
+                ProBuild
+              </span>
+            </Link>
+            <h1 className="font-display text-2xl font-bold uppercase tracking-tight">
+              Create Your Account
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Join thousands of pros and DIYers
+            </p>
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min. 6 characters"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {strength && (
-                  <div className="space-y-1">
-                    <div className="h-1 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full transition-all duration-300 rounded-full"
-                        style={{ width: strength.width, backgroundColor: strength.barColor }}
-                      />
-                    </div>
-                    <p className={`text-xs font-medium ${strength.color}`}>{strength.label}</p>
+          <Card className="py-0 gap-0 overflow-hidden">
+            <div className="h-1 bg-primary" />
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive font-medium">
+                    {error}
                   </div>
                 )}
+
+                <div>
+                  <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide mb-1.5">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wide mb-1.5">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPw ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min 8 characters"
+                      required
+                      autoComplete="new-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground"
+                      onClick={() => setShowPw(!showPw)}
+                    >
+                      {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <StrengthMeter password={password} />
+                </div>
+
+                <div>
+                  <Label htmlFor="confirm" className="text-xs font-semibold uppercase tracking-wide mb-1.5">
+                    Confirm Password
+                  </Label>
+                  <Input
+                    id="confirm"
+                    type="password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="Re-enter password"
+                    required
+                    autoComplete="new-password"
+                  />
+                  {confirm && !passwordsMatch && (
+                    <p className="text-[11px] text-destructive font-medium mt-1">Passwords do not match</p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={loading || !canSubmit}
+                  className="w-full uppercase font-bold tracking-wide"
+                >
+                  {loading ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Account...</>
+                  ) : (
+                    <><UserPlus className="mr-2 h-4 w-4" /> Create Account</>
+                  )}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                Already have an account?{' '}
+                <Link href="/login" className="font-semibold text-primary hover:underline">
+                  Sign in here
+                </Link>
               </div>
+            </CardContent>
+          </Card>
 
-              <Button type="submit" className="w-full" size="lg" disabled={submitting}>
-                {submitting ? 'Creating account…' : 'Create Account'}
-              </Button>
-            </form>
+          <p className="text-center text-[11px] text-muted-foreground mt-4">
+            Your data is secure &bull; 256-bit encryption &bull; ProBuild Supply
+          </p>
+        </div>
+      </div>
 
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link href="/login" className="font-medium text-foreground hover:underline">Sign in</Link>
-            </p>
-          </CardContent>
+      {/* Right panel — Perks (desktop only) */}
+      <div className="hidden lg:flex lg:w-[420px] bg-hw-dark text-white flex-col justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0 hw-dot-grid opacity-30" />
+        <div className="relative z-10">
+          <h2 className="font-display text-2xl font-bold uppercase tracking-tight mb-2">
+            Why Go Pro?
+          </h2>
+          <p className="text-white/60 text-sm mb-8">
+            ProBuild accounts unlock exclusive benefits for contractors, builders, and serious DIYers.
+          </p>
 
-          {/* Right panel — perks */}
-          <div className="hidden lg:flex flex-col justify-center bg-neutral-900 text-white p-10 space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold leading-snug">Everything you need in one place.</h2>
-              <p className="text-neutral-400 mt-2 text-sm">Join thousands of shoppers who trust ShopNow.</p>
-            </div>
-            <ul className="space-y-4">
-              {PERKS.map((perk) => (
-                <li key={perk} className="flex items-center gap-3">
-                  <span className="flex-shrink-0 rounded-full bg-white/10 p-1">
-                    <Check className="h-4 w-4 text-white" />
-                  </span>
-                  <span className="text-sm text-neutral-200">{perk}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-2">
-              <div className="flex gap-1">
-                {[1,2,3,4,5].map(s => <span key={s} className="text-amber-400 text-xs">★</span>)}
+          <div className="space-y-5">
+            {PRO_PERKS.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/20">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{title}</p>
+                  <p className="text-xs text-white/50">{desc}</p>
+                </div>
               </div>
-              <p className="text-sm text-neutral-200 italic">
-                &ldquo;Best online store I&apos;ve used. Fast delivery and everything as described!&rdquo;
-              </p>
-              <p className="text-xs text-neutral-400">— Sarah M., verified buyer</p>
-            </div>
+            ))}
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }

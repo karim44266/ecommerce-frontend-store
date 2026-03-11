@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 import { ProductCard } from '@/components/store/ProductCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,7 +54,6 @@ function ProductsContent() {
 
   const [sortBy, sortOrder] = sortParam.split('-') as [SortBy, SortOrder]
 
-  // Build URL params helper
   const buildUrl = useCallback(
     (overrides: Record<string, string | undefined> = {}) => {
       const params = new URLSearchParams()
@@ -71,14 +70,12 @@ function ProductsContent() {
     [searchInput, activeCategory, sortParam, page],
   )
 
-  // Load categories on mount
   useEffect(() => {
     getCategories()
       .then(setCategories)
       .catch(() => {})
   }, [])
 
-  // Load products when URL params change
   useEffect(() => {
     let cancelled = false
     setLoading(true)
@@ -140,23 +137,22 @@ function ProductsContent() {
   const totalProducts = meta?.total ?? products.length
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Page header */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
+          <h1 className="font-display text-3xl font-bold text-foreground uppercase tracking-tight">
             {category || 'All Products'}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {loading
               ? 'Loading…'
               : `${totalProducts} product${totalProducts !== 1 ? 's' : ''} found`}
           </p>
         </div>
 
-        {/* Sort dropdown */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Sort</span>
           <Select value={sortParam} onValueChange={onSortChange}>
             <SelectTrigger className="w-[180px] h-9 text-sm">
               <SelectValue />
@@ -172,8 +168,8 @@ function ProductsContent() {
         </div>
       </div>
 
-      {/* Search + filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Search + filters bar */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <form onSubmit={applySearch} className="flex gap-2 flex-1 max-w-lg">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -181,12 +177,13 @@ function ProductsContent() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search products..."
-              className="pl-9"
+              placeholder="Search tools, materials, brands..."
+              className="pl-9 bg-muted/50"
             />
           </div>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="outline" className="gap-1.5">
             <SlidersHorizontal className="h-4 w-4" />
+            <span className="hidden sm:inline">Filter</span>
           </Button>
         </form>
 
@@ -195,7 +192,7 @@ function ProductsContent() {
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="self-start gap-1 text-muted-foreground"
+            className="gap-1 text-muted-foreground"
           >
             <X className="h-3.5 w-3.5" /> Clear filters
           </Button>
@@ -207,7 +204,7 @@ function ProductsContent() {
         <button onClick={() => setCategory('')}>
           <Badge
             variant={!activeCategory ? 'default' : 'outline'}
-            className="px-4 py-1.5 text-sm cursor-pointer"
+            className="px-4 py-1.5 text-xs font-semibold cursor-pointer uppercase tracking-wide"
           >
             All
           </Badge>
@@ -216,7 +213,7 @@ function ProductsContent() {
           <button key={cat.id} onClick={() => setCategory(cat.name)}>
             <Badge
               variant={activeCategory === cat.name ? 'default' : 'outline'}
-              className="px-4 py-1.5 text-sm cursor-pointer"
+              className="px-4 py-1.5 text-xs font-semibold cursor-pointer"
             >
               {cat.name}
             </Badge>
@@ -229,21 +226,22 @@ function ProductsContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-3">
-              <Skeleton className="aspect-square rounded-xl" />
+              <Skeleton className="aspect-[4/3] rounded-xl" />
+              <Skeleton className="h-3 w-1/3" />
               <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-3 w-1/2" />
               <Skeleton className="h-8 w-full" />
             </div>
           ))}
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-24 space-y-4">
-          <p className="text-4xl">🔍</p>
-          <h2 className="text-xl font-semibold text-foreground">No products found</h2>
-          <p className="text-muted-foreground">
-            Try a different search term or category.
+          <LayoutGrid className="h-12 w-12 text-muted-foreground/30 mx-auto" />
+          <h2 className="font-display text-xl font-bold text-foreground uppercase">No products found</h2>
+          <p className="text-muted-foreground text-sm">
+            Try a different search term or browse a department.
           </p>
-          <Button onClick={clearFilters}>Browse all products</Button>
+          <Button onClick={clearFilters}>Browse All Products</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -269,7 +267,6 @@ function ProductsContent() {
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter((p) => {
-                // Show first, last, and pages near current
                 if (p === 1 || p === totalPages) return true
                 return Math.abs(p - page) <= 2
               })
@@ -280,12 +277,7 @@ function ProductsContent() {
               }, [])
               .map((item, idx) =>
                 item === 'dots' ? (
-                  <span
-                    key={`dots-${idx}`}
-                    className="px-2 text-muted-foreground text-sm"
-                  >
-                    …
-                  </span>
+                  <span key={`dots-${idx}`} className="px-2 text-muted-foreground text-sm">…</span>
                 ) : (
                   <Button
                     key={item}
@@ -312,9 +304,8 @@ function ProductsContent() {
         </div>
       )}
 
-      {/* Page indicator */}
       {!loading && totalPages > 1 && (
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs text-muted-foreground">
           Page {page} of {totalPages} · Showing {products.length} of {totalProducts} products
         </p>
       )}
@@ -324,20 +315,23 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="aspect-square rounded-xl" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-8 w-full" />
-            </div>
-          ))}
+    <Suspense
+      fallback={
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-[4/3] rounded-xl" />
+                <Skeleton className="h-3 w-1/3" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ProductsContent />
     </Suspense>
   )
