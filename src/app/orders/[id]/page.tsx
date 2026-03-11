@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft, MapPin,
+  Package, Truck, CheckCircle2, Clock, XCircle, ArrowLeft, MapPin, BadgeCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -29,7 +29,8 @@ const STATUS_STEPS = [
   { key: 'PENDING', label: 'Order Placed', icon: Clock },
   { key: 'ACCEPTED', label: 'Confirmed', icon: CheckCircle2 },
   { key: 'PROCESSING', label: 'Processing', icon: Package },
-  { key: 'DELIVERED', label: 'Delivered', icon: CheckCircle2 },
+  { key: 'DELIVERED', label: 'Delivered', icon: Truck },
+  { key: 'COMPLETED', label: 'Completed', icon: BadgeCheck },
 ]
 
 const TERMINAL_FAILED = ['CANCELLED', 'REFUNDED', 'FAILED']
