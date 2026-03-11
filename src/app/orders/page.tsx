@@ -100,10 +100,12 @@ export default function OrdersListPage() {
   if (error && orders.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-24 text-center space-y-4">
-        <XCircle className="h-12 w-12 text-muted-foreground/40 mx-auto" />
-        <h1 className="text-xl font-bold">Something went wrong</h1>
+        <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-destructive/10 mx-auto">
+          <XCircle className="h-8 w-8 text-destructive" />
+        </div>
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Something went wrong</h1>
         <p className="text-muted-foreground">{error}</p>
-        <Button onClick={() => setPage(1)}>Try again</Button>
+        <Button onClick={() => setPage(1)} className="hw-glow">Try again</Button>
       </div>
     )
   }
@@ -112,13 +114,15 @@ export default function OrdersListPage() {
   if (!loading && orders.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-24 text-center space-y-4">
-        <ShoppingBag className="h-14 w-14 text-muted-foreground/30 mx-auto" />
-        <h1 className="text-xl font-bold">No orders yet</h1>
+        <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-muted mx-auto">
+          <ShoppingBag className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">No orders yet</h1>
         <p className="text-muted-foreground">
           Once you place an order, it will appear here so you can track its progress.
         </p>
         <Link href="/products">
-          <Button>Browse Products</Button>
+          <Button className="hw-glow">Browse Products</Button>
         </Link>
       </div>
     )
@@ -128,8 +132,8 @@ export default function OrdersListPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">My Orders</h1>
+      <div className="hw-fade-up">
+        <h1 className="font-display text-3xl font-bold text-foreground uppercase tracking-tight">My Orders</h1>
         <p className="text-sm text-muted-foreground mt-1">
           {meta.total} order{meta.total !== 1 ? 's' : ''} total
         </p>
@@ -147,7 +151,7 @@ export default function OrdersListPage() {
 
           return (
             <Link key={order.id} href={`/orders/${order.id}`}>
-              <Card className="hover:bg-muted/40 transition-colors cursor-pointer group">
+              <Card className="hover:bg-muted/40 transition-all cursor-pointer group hw-lift border-border hover:border-primary/30">
                 <CardContent className="p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-4">
                     {/* Left */}

@@ -77,11 +77,13 @@ export default function OrderTrackingPage() {
   if (error || !order) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center space-y-4">
-        <XCircle className="h-12 w-12 text-muted-foreground/40 mx-auto" />
-        <h1 className="text-xl font-bold text-foreground">Order not found</h1>
+        <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-destructive/10 mx-auto">
+          <XCircle className="h-8 w-8 text-destructive" />
+        </div>
+        <h1 className="font-display text-2xl font-bold text-foreground uppercase tracking-tight">Order not found</h1>
         <p className="text-muted-foreground">{error || 'This order does not exist or is unavailable.'}</p>
         <Link href="/">
-          <Button>Back to Home</Button>
+          <Button className="hw-glow">Back to Home</Button>
         </Link>
       </div>
     )
@@ -101,8 +103,8 @@ export default function OrderTrackingPage() {
       </Link>
 
       {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-foreground">Order Tracking</h1>
+      <div className="space-y-1 hw-fade-up">
+        <h1 className="font-display text-3xl font-bold text-foreground uppercase tracking-tight">Order Tracking</h1>
         <p className="text-sm text-muted-foreground">
           Order <span className="font-mono text-foreground/70">{order.id}</span>
           {' · '}
@@ -178,7 +180,7 @@ export default function OrderTrackingPage() {
       {/* Order summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Order Items</CardTitle>
+          <CardTitle className="font-display text-lg font-bold uppercase tracking-tight">Order Items</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <ul className="divide-y divide-border">
@@ -207,7 +209,7 @@ export default function OrderTrackingPage() {
         {order.shippingAddress && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-display text-lg font-bold uppercase tracking-tight">
                 <MapPin className="h-4 w-4" /> Shipping Address
               </CardTitle>
             </CardHeader>
@@ -234,7 +236,7 @@ export default function OrderTrackingPage() {
         {(order.carrier || order.trackingNumber) && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-display text-lg font-bold uppercase tracking-tight">
                 <Truck className="h-4 w-4" /> Tracking Information
               </CardTitle>
             </CardHeader>
@@ -260,7 +262,7 @@ export default function OrderTrackingPage() {
       {order.statusHistory && order.statusHistory.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Status History</CardTitle>
+            <CardTitle className="font-display text-lg font-bold uppercase tracking-tight">Status History</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-0">
@@ -297,7 +299,7 @@ export default function OrderTrackingPage() {
       )}
 
       <Link href="/products">
-        <Button variant="outline" className="w-full">Continue Shopping</Button>
+        <Button variant="outline" className="w-full font-semibold uppercase tracking-wide">Continue Shopping</Button>
       </Link>
     </div>
   )
