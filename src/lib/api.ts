@@ -42,6 +42,23 @@ export const apiPost = async <TResponse>(path: string, body: unknown, token?: st
   return (await response.json()) as TResponse;
 };
 
+export const apiPatch = async <TResponse>(path: string, body: unknown, token?: string): Promise<TResponse> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(await buildErrorMessage(response));
+  }
+
+  return (await response.json()) as TResponse;
+};
+
 export const apiGet = async <TResponse>(path: string, token?: string): Promise<TResponse> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'GET',
@@ -118,6 +135,17 @@ interface MeResponse {
   roles: string[];
 }
 
+export interface CurrentUserProfile {
+  id: string;
+  userId?: string;
+  email: string;
+  name?: string;
+  roles: string[];
+  role?: string;
+  status?: string;
+  mfaEnabled?: boolean;
+}
+
 const getStoredToken = (): string | null =>
   typeof window !== 'undefined' ? localStorage.getItem('store_token') : null;
 
@@ -131,6 +159,33 @@ export const getMe = async (): Promise<MeResponse> => {
   const token = getStoredToken();
   if (!token) throw new Error('Not authenticated');
   return apiGet<MeResponse>('/auth/me', token);
+};
+
+export const getCurrentUser = async (): Promise<CurrentUserProfile> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiGet<CurrentUserProfile>('/users/me', token);
+};
+
+export const updateProfile = async (data: { name?: string }): Promise<CurrentUserProfile> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiPatch<CurrentUserProfile>('/users/me/profile', data, token);
+};
+
+export const changePassword = async (data: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{ message: string }> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiPatch<{ message: string }>('/users/me/password', data, token);
+};
+
+export const toggleMfa = async (enabled: boolean): Promise<{ mfaEnabled: boolean }> => {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated');
+  return apiPatch<{ mfaEnabled: boolean }>('/auth/mfa', { enabled }, token);
 };
 
 // ─── Product helpers ─────────────────────────────────────────────

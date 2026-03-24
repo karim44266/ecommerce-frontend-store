@@ -161,6 +161,10 @@ export function Header() {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push('/account')}>
+                      <User className="mr-2 h-4 w-4" />
+                      My Account
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push('/orders')}>
                       <Package className="mr-2 h-4 w-4" />
                       My Orders
@@ -222,6 +226,7 @@ export function Header() {
                       {[
                         { href: '/', label: 'Home' },
                         { href: '/products', label: 'All Products' },
+                          { href: '/account', label: 'My Account' },
                         { href: '/orders', label: 'My Orders' },
                       ].map((link) => (
                         <Link
@@ -289,6 +294,13 @@ export function Header() {
                     {user ? (
                       <div className="space-y-3">
                         <p className="text-sm text-muted-foreground truncate px-3">{user.email}</p>
+                        <Link
+                          href="/account"
+                          onClick={() => setSheetOpen(false)}
+                          className="flex items-center gap-2 py-2 px-3 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted"
+                        >
+                          <User className="h-4 w-4" /> My Account
+                        </Link>
                         <Link
                           href="/orders"
                           onClick={() => setSheetOpen(false)}
