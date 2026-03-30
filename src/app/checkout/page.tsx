@@ -77,8 +77,6 @@ export default function CheckoutPage() {
 
   const [form, setForm] = useState({
     fullName: '',
-    clientEmail: '',
-    clientPhone: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
@@ -136,8 +134,6 @@ export default function CheckoutPage() {
 
   const canProceed =
     form.fullName.trim() &&
-    form.clientEmail.trim() &&
-    form.clientPhone.trim() &&
     form.addressLine1.trim() &&
     form.city.trim() &&
     form.state.trim() &&
@@ -152,8 +148,6 @@ export default function CheckoutPage() {
         items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
         shippingAddress: {
           fullName: form.fullName,
-          clientEmail: form.clientEmail,
-          clientPhone: form.clientPhone,
           addressLine1: form.addressLine1,
           addressLine2: form.addressLine2 || undefined,
           city: form.city,
@@ -198,14 +192,6 @@ export default function CheckoutPage() {
                       Full Name *
                     </Label>
                     <Input id="fullName" value={form.fullName} onChange={set('fullName')} placeholder="John Smith" />
-                  </div>
-                  <div>
-                    <Label htmlFor="clientEmail" className="text-xs font-semibold uppercase tracking-wide mb-1.5">Client Email *</Label>
-                    <Input id="clientEmail" type="email" value={form.clientEmail} onChange={set('clientEmail')} placeholder="client@example.com" />
-                  </div>
-                  <div>
-                    <Label htmlFor="clientPhone" className="text-xs font-semibold uppercase tracking-wide mb-1.5">Client Phone *</Label>
-                    <Input id="clientPhone" value={form.clientPhone} onChange={set('clientPhone')} placeholder="+1 555 123 4567" />
                   </div>
                   <div className="sm:col-span-2">
                     <Label htmlFor="address1" className="text-xs font-semibold uppercase tracking-wide mb-1.5">
@@ -267,7 +253,6 @@ export default function CheckoutPage() {
                 </div>
                 <CardContent className="px-6 py-4">
                   <p className="text-sm font-semibold">{form.fullName}</p>
-                  <p className="text-sm text-muted-foreground">{form.clientEmail} · {form.clientPhone}</p>
                   <p className="text-sm text-muted-foreground">{form.addressLine1}</p>
                   {form.addressLine2 && <p className="text-sm text-muted-foreground">{form.addressLine2}</p>}
                   <p className="text-sm text-muted-foreground">

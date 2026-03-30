@@ -239,8 +239,6 @@ export interface ShippingAddress {
   state: string;
   postalCode: string;
   country: string;
-  clientPhone: string;
-  clientEmail: string;
 }
 
 export interface OrderItem {
@@ -296,8 +294,6 @@ export interface CreateOrderPayload {
     state: string;
     postalCode: string;
     country: string;
-    clientPhone: string;
-    clientEmail: string;
   };
 }
 
