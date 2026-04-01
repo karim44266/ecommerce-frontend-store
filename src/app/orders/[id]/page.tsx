@@ -35,8 +35,22 @@ const STATUS_STEPS = [
 
 const TERMINAL_FAILED = ['CANCELLED', 'REFUNDED', 'FAILED']
 
+const STATUS_ALIAS: Record<string, string> = {
+  DRAFT: 'PENDING',
+  CONFIRMED: 'ACCEPTED',
+  IN_PREPARATION: 'PROCESSING',
+  DELIVERED: 'DELIVERED',
+  SETTLED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+}
+
+function normalizeStatus(status: string): string {
+  return STATUS_ALIAS[status] ?? status
+}
+
 function getStepIndex(status: string): number {
-  const idx = STATUS_STEPS.findIndex((s) => s.key === status)
+  const normalized = normalizeStatus(status)
+  const idx = STATUS_STEPS.findIndex((s) => s.key === normalized)
   return idx === -1 ? 0 : idx
 }
 
@@ -89,8 +103,9 @@ export default function OrderTrackingPage() {
     )
   }
 
-  const isFailed = TERMINAL_FAILED.includes(order.status)
-  const currentStep = getStepIndex(order.status)
+  const normalizedStatus = normalizeStatus(order.status)
+  const isFailed = TERMINAL_FAILED.includes(normalizedStatus)
+  const currentStep = getStepIndex(normalizedStatus)
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
@@ -119,7 +134,7 @@ export default function OrderTrackingPage() {
             <div className="flex items-center gap-3 text-destructive">
               <XCircle className="h-6 w-6" />
               <div>
-                <p className="font-semibold">Order {order.status.toLowerCase()}</p>
+                <p className="font-semibold">Order {normalizedStatus.toLowerCase()}</p>
                 <p className="text-sm text-muted-foreground mt-0.5">
                   This order was cancelled or refunded. Contact support if you need help.
                 </p>
