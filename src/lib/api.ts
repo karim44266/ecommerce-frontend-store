@@ -267,6 +267,7 @@ export interface OrderStatus {
   shippingAddress: ShippingAddress | string;
   trackingNumber: string | null;
   carrier: string | null;
+  deliveryCode?: string | null;
   items: OrderItem[];
   statusHistory?: OrderStatusHistoryEntry[];
   createdAt: string;

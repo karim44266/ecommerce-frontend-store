@@ -248,24 +248,40 @@ export default function OrderTrackingPage() {
           </Card>
         )}
 
-        {(order.carrier || order.trackingNumber) && (
+        {(order.carrier || order.trackingNumber || order.deliveryCode) && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-display text-lg font-bold uppercase tracking-tight">
-                <Truck className="h-4 w-4" /> Tracking Information
+                <Truck className="h-4 w-4" /> Delivery Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm space-y-2">
-              {order.carrier && (
-                <div>
-                  <span className="text-muted-foreground">Carrier: </span>
-                  <span className="font-medium">{order.carrier}</span>
+            <CardContent className="text-sm space-y-3">
+              {(order.carrier || order.trackingNumber) && (
+                <div className="space-y-2">
+                  {order.carrier && (
+                    <div>
+                      <span className="text-muted-foreground mr-2">Carrier:</span>
+                      <span className="font-medium">{order.carrier}</span>
+                    </div>
+                  )}
+                  {order.trackingNumber && (
+                    <div>
+                      <span className="text-muted-foreground mr-2">Tracking #:</span>
+                      <code className="font-mono text-foreground/70">{order.trackingNumber}</code>
+                    </div>
+                  )}
                 </div>
               )}
-              {order.trackingNumber && (
-                <div>
-                  <span className="text-muted-foreground">Tracking #: </span>
-                  <code className="font-mono text-foreground/70">{order.trackingNumber}</code>
+              
+              {order.deliveryCode && (
+                <div className="mt-3 p-3 bg-primary/10 border border-primary/20 rounded-md">
+                  <div className="font-bold text-primary mb-1">Secure Delivery PIN</div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    Please provide this 4-digit code to the delivery staff upon arrival to securely receive your package.
+                  </div>
+                  <div className="font-mono text-xl tracking-[0.25em] font-bold text-foreground bg-background px-3 py-2 rounded text-center border">
+                    {order.deliveryCode}
+                  </div>
                 </div>
               )}
             </CardContent>
