@@ -152,8 +152,11 @@ const getStoredToken = (): string | null =>
 export const login = async (email: string, password: string): Promise<LoginResponse> =>
   apiPost<LoginResponse>('/auth/login', { email, password });
 
-export const register = async (email: string, password: string): Promise<RegisterResponse> =>
-  apiPost<RegisterResponse>('/auth/register', { email, password });
+export const register = async (
+  name: string,
+  email: string,
+  password: string,
+): Promise<RegisterResponse> => apiPost<RegisterResponse>('/auth/register', { name, email, password });
 
 export const getMe = async (): Promise<MeResponse> => {
   const token = getStoredToken();
