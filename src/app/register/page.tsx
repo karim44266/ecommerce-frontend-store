@@ -58,6 +58,7 @@ export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuth()
 
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -66,7 +67,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
 
   const passwordsMatch = password === confirm
-  const canSubmit = email && password.length >= 8 && passwordsMatch
+  const canSubmit = name.trim() && email && password.length >= 8 && passwordsMatch
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -74,7 +75,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      await register(email, password)
+      await register(name.trim(), email, password)
       router.push('/')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed')
@@ -115,6 +116,21 @@ export default function RegisterPage() {
                     {error}
                   </div>
                 )}
+
+                <div>
+                  <Label htmlFor="name" className="text-xs font-semibold uppercase tracking-wide mb-1.5">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your full name"
+                    required
+                    autoComplete="name"
+                  />
+                </div>
 
                 <div>
                   <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide mb-1.5">

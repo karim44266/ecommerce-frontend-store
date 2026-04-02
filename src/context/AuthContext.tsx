@@ -14,7 +14,7 @@ interface AuthContextValue {
   token: string | null
   loading: boolean
   login: (email: string, password: string) => Promise<{ mfaRequired?: boolean }>
-  register: (email: string, password: string) => Promise<void>
+  register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
   setTokenAndLoadUser: (accessToken: string) => Promise<void>
 }
@@ -54,8 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { mfaRequired: res.mfaRequired }
   }, [])
 
-  const register = useCallback(async (email: string, password: string) => {
-    const res = await apiRegister(email, password)
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    const res = await apiRegister(name, email, password)
     if (res.accessToken) {
       localStorage.setItem('store_token', res.accessToken)
       setToken(res.accessToken)
