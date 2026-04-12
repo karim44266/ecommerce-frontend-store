@@ -42,7 +42,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
           {/* Stock badges */}
           {lowStock && (
-            <Badge className="absolute top-2.5 left-2.5 bg-amber-500 text-white border-0 text-[10px] font-bold uppercase tracking-wide hw-stock-pulse">
+            <Badge className="absolute top-2.5 left-2.5 bg-amber-600 text-white border-0 text-[10px] font-bold uppercase tracking-wide hw-stock-pulse">
               Only {product.stock} left
             </Badge>
           )}

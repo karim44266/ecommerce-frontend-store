@@ -78,7 +78,7 @@ export default function AccountPage() {
       </Link>
 
       <section className="relative overflow-hidden rounded-2xl border border-border bg-card hw-dot-grid hw-fade-up">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-transparent to-hw-yellow/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-transparent to-blue-200/10" />
         <div className="relative p-6 sm:p-8">
           <p className="text-xs uppercase tracking-[0.18em] font-semibold text-muted-foreground">Account Center</p>
           <h1 className="font-display text-4xl font-bold uppercase tracking-tight mt-2">My Account</h1>
@@ -138,9 +138,9 @@ export default function AccountPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-display uppercase tracking-wide">
               {profile?.mfaEnabled ? (
-                <ShieldCheck className="h-5 w-5 text-hw-green" />
+                <ShieldCheck className="h-5 w-5 text-emerald-600" />
               ) : (
-                <ShieldAlert className="h-5 w-5 text-hw-orange" />
+                <ShieldAlert className="h-5 w-5 text-amber-600" />
               )}
               Security Posture
             </CardTitle>
