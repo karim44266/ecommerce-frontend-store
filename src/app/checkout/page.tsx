@@ -43,7 +43,7 @@ function StepIndicator({ current }: { current: Step }) {
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
                   done
-                    ? 'bg-hw-green text-white'
+                    ? 'bg-emerald-600 text-white'
                     : active
                     ? 'bg-primary text-white'
                     : 'bg-muted text-muted-foreground'
@@ -269,7 +269,7 @@ export default function CheckoutPage() {
                 </div>
                 <CardContent className="px-6 py-4">
                   <div className="flex items-center gap-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 p-3 border border-amber-200 dark:border-amber-500/20">
-                    <Banknote className="h-5 w-5 text-amber-600" />
+                    <Banknote className="h-5 w-5 text-amber-700" />
                     <div>
                       <p className="text-sm font-semibold">Cash on Delivery (COD)</p>
                       <p className="text-xs text-muted-foreground">Pay when your order arrives at your door</p>

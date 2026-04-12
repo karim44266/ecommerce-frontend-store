@@ -31,7 +31,7 @@ function StrengthMeter({ password }: { password: string }) {
   if (/[^A-Za-z0-9]/.test(password)) score++
 
   const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Excellent']
-  const colors = ['', 'bg-destructive', 'bg-amber-500', 'bg-hw-yellow', 'bg-hw-green', 'bg-hw-green']
+  const colors = ['', 'bg-destructive', 'bg-amber-500', 'bg-amber-400', 'bg-emerald-500', 'bg-emerald-500']
 
   if (!password) return null
 
@@ -47,7 +47,7 @@ function StrengthMeter({ password }: { password: string }) {
           />
         ))}
       </div>
-      <p className={`text-[11px] font-semibold ${score <= 2 ? 'text-destructive' : 'text-hw-green'}`}>
+      <p className={`text-[11px] font-semibold ${score <= 2 ? 'text-destructive' : 'text-emerald-600'}`}>
         {labels[score]}
       </p>
     </div>

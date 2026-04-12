@@ -74,7 +74,7 @@ export function Header() {
             <span className="hidden lg:inline">Mon–Sat 7AM–8PM · Sun 9AM–6PM</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-hw-yellow">FREE SHIPPING ON ORDERS $75+</span>
+            <span className="font-semibold text-blue-300">FREE SHIPPING ON ORDERS $75+</span>
             <span className="text-white/40">|</span>
             <Link href="/products" className="hover:text-white transition-colors">
               Pro Discounts

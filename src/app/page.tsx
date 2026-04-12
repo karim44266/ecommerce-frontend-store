@@ -13,13 +13,13 @@ export const dynamic = 'force-dynamic'
 
 /* ── Hardware categories with icons ──────────────────────────── */
 const HW_DEPARTMENTS = [
-  { name: 'Power Tools', icon: Wrench, color: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400', href: '/products?category=Power+Tools' },
-  { name: 'Hand Tools', icon: Hammer, color: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400', href: '/products?category=Hand+Tools' },
-  { name: 'Electrical', icon: Zap, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400', href: '/products?category=Electrical' },
-  { name: 'Plumbing', icon: Droplets, color: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400', href: '/products?category=Plumbing' },
-  { name: 'Paint', icon: Paintbrush, color: 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-400', href: '/products?category=Paint' },
-  { name: 'Fasteners', icon: Cog, color: 'bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300', href: '/products?category=Fasteners' },
-  { name: 'Safety Equipment', icon: HardHat, color: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400', href: '/products?category=Safety+Equipment' },
+  { name: 'Power Tools', icon: Wrench, color: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400', href: '/products?category=Power+Tools' },
+  { name: 'Hand Tools', icon: Hammer, color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400', href: '/products?category=Hand+Tools' },
+  { name: 'Electrical', icon: Zap, color: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400', href: '/products?category=Electrical' },
+  { name: 'Plumbing', icon: Droplets, color: 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400', href: '/products?category=Plumbing' },
+  { name: 'Paint', icon: Paintbrush, color: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-400', href: '/products?category=Paint' },
+  { name: 'Fasteners', icon: Cog, color: 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300', href: '/products?category=Fasteners' },
+  { name: 'Safety Equipment', icon: HardHat, color: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400', href: '/products?category=Safety+Equipment' },
   { name: 'Building Materials', icon: Building2, color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400', href: '/products?category=Building+Materials' },
 ]
 
@@ -40,7 +40,7 @@ export default async function HomePage() {
         <div className="hw-dot-grid absolute inset-0 pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
           <div className="max-w-2xl space-y-6">
-            <Badge className="bg-hw-yellow text-yellow-900 border-yellow-300 font-semibold text-xs tracking-wider uppercase">
+            <Badge className="bg-blue-100 text-blue-800 border-blue-200 font-semibold text-xs tracking-wider uppercase">
               Same-Day Pickup Available
             </Badge>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight uppercase">

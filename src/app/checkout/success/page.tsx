@@ -62,8 +62,8 @@ function SuccessContent() {
     <div className="container mx-auto max-w-3xl px-4 py-8 md:py-16">
       {/* Success banner */}
       <div className="text-center mb-10">
-        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-hw-green/15">
-          <CheckCircle2 className="h-10 w-10 text-hw-green" />
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-600/15">
+          <CheckCircle2 className="h-10 w-10 text-emerald-600" />
         </div>
         <h1 className="font-display text-3xl md:text-4xl font-bold uppercase tracking-tight mb-2">
           Order Confirmed!

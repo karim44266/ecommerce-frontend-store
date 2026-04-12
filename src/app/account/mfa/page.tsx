@@ -87,9 +87,9 @@ export default function ManageMfaPage() {
         <CardHeader>
           <CardTitle className="font-display uppercase tracking-wide flex items-center gap-2">
             {mfaEnabled ? (
-              <ShieldCheck className="h-5 w-5 text-hw-green" />
+              <ShieldCheck className="h-5 w-5 text-emerald-600" />
             ) : (
-              <ShieldAlert className="h-5 w-5 text-hw-orange" />
+              <ShieldAlert className="h-5 w-5 text-amber-600" />
             )}
             Multi-factor Authentication
           </CardTitle>

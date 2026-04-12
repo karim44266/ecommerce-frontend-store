@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
             <span className="text-sm text-muted-foreground line-through">
               ${(product.price * 1.2).toFixed(2)}
             </span>
-            <Badge className="bg-hw-green text-white border-0 text-xs font-bold uppercase">
+            <Badge className="bg-emerald-600 text-white border-0 text-xs font-bold uppercase">
               Save 17%
             </Badge>
           </div>
@@ -196,7 +196,7 @@ export default function ProductDetailPage() {
                   onClick={handleAddToCart}
                   className={cn(
                     'flex-1 gap-2 text-sm font-semibold uppercase tracking-wide transition-all',
-                    added && 'bg-hw-green hover:bg-hw-green',
+                    added && 'bg-emerald-600 hover:bg-emerald-600',
                   )}
                 >
                   {added ? (
