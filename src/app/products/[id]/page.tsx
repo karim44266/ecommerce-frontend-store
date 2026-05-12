@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,7 +17,18 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/components/store/ProductCard'
 import { useCart } from '@/context/CartContext'
 import { getProduct, getProducts, type Product } from '@/lib/api'
+import { useRecommendations } from '@/lib/hooks/useRecommendations'
 import { cn } from '@/lib/utils'
+
+const PromotionCarousel = dynamic(
+  () =>
+    import('@/components/promotions/PromotionCarousel').then(
+      (module) => module.PromotionCarousel,
+    ),
+  {
+    ssr: false,
+  },
+)
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -29,6 +41,12 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [added, setAdded] = useState(false)
+
+  const {
+    recommendations,
+    source: recommendationSource,
+    isLoading: recommendationsLoading,
+  } = useRecommendations()
 
   const id = params.id as string
 
@@ -84,6 +102,12 @@ export default function ProductDetailPage() {
 
   const inStock = product.stock > 0
   const lowStock = product.stock > 0 && product.stock <= 5
+  const discountPercent = Number(product.activeDiscount?.discountPercent ?? 0)
+  const hasDiscount = Number.isFinite(discountPercent) && discountPercent > 0
+  const effectivePrice = Number(product.displayPrice ?? product.price)
+  const recommendationsWithoutCurrent = recommendations.filter(
+    (item) => item.productId !== product.id,
+  )
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-14">
@@ -138,16 +162,26 @@ export default function ProductDetailPage() {
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
+            {hasDiscount && (
+              <Badge className="bg-rose-600 text-white border-0 text-xs font-semibold uppercase tracking-wide">
+                -{Math.round(discountPercent)}%
+              </Badge>
+            )}
+            {hasDiscount && (
+              <span className="text-base text-muted-foreground line-through">
+                ${product.price.toFixed(2)}
+              </span>
+            )}
             <span className="text-3xl sm:text-4xl font-extrabold text-foreground hw-price">
-              ${product.price.toFixed(2)}
+              ${effectivePrice.toFixed(2)}
             </span>
-            <span className="text-sm text-muted-foreground line-through">
-              ${(product.price * 1.2).toFixed(2)}
-            </span>
-            <Badge className="bg-emerald-600 text-white border-0 text-xs font-bold uppercase">
-              Save 17%
-            </Badge>
           </div>
+
+          {hasDiscount && product.activeDiscount?.minOrderAmount && (
+            <p className="text-xs text-muted-foreground">
+              Discount campaign minimum order: ${Number(product.activeDiscount.minOrderAmount).toFixed(2)}
+            </p>
+          )}
 
           {/* Description */}
           <p className="text-muted-foreground leading-relaxed text-sm">{product.description}</p>
@@ -232,6 +266,14 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      <PromotionCarousel
+        title="You Might Also Like"
+        maxItems={4}
+        recommendations={recommendationsWithoutCurrent}
+        source={recommendationSource}
+        isLoading={recommendationsLoading}
+      />
 
       {/* Related products */}
       {related.length > 0 && (
