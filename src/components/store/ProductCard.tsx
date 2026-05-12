@@ -26,6 +26,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const inStock = product.stock > 0
   const lowStock = product.stock > 0 && product.stock <= 5
+  const discountPercent = Number(product.activeDiscount?.discountPercent ?? 0)
+  const hasDiscount = Number.isFinite(discountPercent) && discountPercent > 0
+  const effectivePrice = Number(product.displayPrice ?? product.price)
+  const roundedDiscount = Math.round(discountPercent)
 
   return (
     <Link href={`/products/${product.id}`} className={cn('group block', className)}>
@@ -44,6 +48,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {lowStock && (
             <Badge className="absolute top-2.5 left-2.5 bg-amber-600 text-white border-0 text-[10px] font-bold uppercase tracking-wide hw-stock-pulse">
               Only {product.stock} left
+            </Badge>
+          )}
+          {hasDiscount && (
+            <Badge className="absolute top-2.5 right-2.5 bg-rose-600 text-white border-0 text-[10px] font-bold uppercase tracking-wide">
+              -{roundedDiscount}%
             </Badge>
           )}
           {!inStock && (
@@ -88,9 +97,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           {/* Price + CTA */}
           <div className="flex items-center justify-between pt-1.5">
-            <span className="text-lg font-bold text-foreground hw-price">
-              ${product.price.toFixed(2)}
-            </span>
+            <div className="flex flex-col">
+              {hasDiscount && (
+                <span className="text-[11px] text-muted-foreground line-through">
+                  ${product.price.toFixed(2)}
+                </span>
+              )}
+              <span className="text-lg font-bold text-foreground hw-price">
+                ${effectivePrice.toFixed(2)}
+              </span>
+            </div>
             <Button
               size="sm"
               onClick={handleAddToCart}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/store/ProductCard'
+import { HomePromotionsSection } from '@/components/promotions/HomePromotionsSection'
 import { getProducts, getCategories, type SimpleCategory } from '@/lib/api'
 
 export const dynamic = 'force-dynamic'
@@ -154,6 +155,9 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── Picked for You ─────────────────────────────────────── */}
+      <HomePromotionsSection />
 
       {/* ── Featured Products ──────────────────────────────────── */}
       {top.length > 0 && (

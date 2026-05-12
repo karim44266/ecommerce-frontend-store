@@ -89,6 +89,17 @@ export interface Product {
   status: string;
   category: string | null;
   categoryId: string | null;
+  displayPrice?: number;
+  activeDiscount?: {
+    campaignId: string;
+    campaignName: string;
+    discountType: 'PERCENT' | 'FIXED';
+    discountValue: number;
+    discountPercent: number;
+    discountAmount: number;
+    discountedPrice: number;
+    minOrderAmount: number | null;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -218,7 +229,11 @@ const buildProductQuery = (params?: GetProductsParams): string => {
 
 export const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
   const qs = buildProductQuery(params);
-  const res = await apiGet<PaginatedResponse<Product>>(`/products${qs ? `?${qs}` : ''}`);
+  const token = getStoredToken() ?? undefined;
+  const res = await apiGet<PaginatedResponse<Product>>(
+    `/products${qs ? `?${qs}` : ''}`,
+    token,
+  );
   return res.data;
 };
 
@@ -226,11 +241,15 @@ export const getProductsPaginated = async (
   params?: GetProductsParams,
 ): Promise<PaginatedResponse<Product>> => {
   const qs = buildProductQuery(params);
-  return apiGet<PaginatedResponse<Product>>(`/products${qs ? `?${qs}` : ''}`);
+  const token = getStoredToken() ?? undefined;
+  return apiGet<PaginatedResponse<Product>>(
+    `/products${qs ? `?${qs}` : ''}`,
+    token,
+  );
 };
 
 export const getProduct = async (id: string): Promise<Product> =>
-  apiGet<Product>(`/products/${id}`);
+  apiGet<Product>(`/products/${id}`, getStoredToken() ?? undefined);
 
 // ─── Order types & helpers ───────────────────────────────────────
 
