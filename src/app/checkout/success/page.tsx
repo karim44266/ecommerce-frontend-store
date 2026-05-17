@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { getOrder, type OrderStatus } from '@/lib/api'
+import { formatCurrency } from '@/lib/formatters'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
@@ -99,7 +100,7 @@ function SuccessContent() {
                 Total
               </p>
               <p className="hw-price text-lg font-bold text-primary">
-                ${Number(order.totalAmount).toFixed(2)}
+                {formatCurrency(order.totalAmount)}
               </p>
             </div>
             <div>
@@ -156,7 +157,7 @@ function SuccessContent() {
                   <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
                 <span className="hw-price text-sm font-bold shrink-0">
-                  ${(Number(item.unitPrice) * item.quantity).toFixed(2)}
+                  {formatCurrency(Number(item.unitPrice) * item.quantity)}
                 </span>
               </div>
             </div>

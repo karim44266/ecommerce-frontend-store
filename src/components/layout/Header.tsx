@@ -1,16 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   ShoppingCart, User, LogOut, Search, Package, Menu,
   Wrench, Hammer, Zap, Droplets, Paintbrush, Cog,
-  ShieldCheck, Building2, Phone, ChevronRight, Sun, Moon,
+  ShieldCheck, Building2, Phone, Mail, ChevronRight, Sun, Moon,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
+import { company } from '@/lib/company'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -68,16 +70,18 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-8 text-xs">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <Phone className="h-3 w-3" /> (555) 123-4567
+              <Phone className="h-3 w-3" /> {company.contact.phone}
             </span>
             <span className="hidden lg:inline text-white/40">|</span>
-            <span className="hidden lg:inline">Mon–Sat 7AM–8PM · Sun 9AM–6PM</span>
+            <span className="hidden lg:inline flex items-center gap-1">
+              <Mail className="h-3 w-3" /> {company.contact.email}
+            </span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-blue-300">FREE SHIPPING ON ORDERS $75+</span>
+            <span className="font-semibold text-blue-300">{company.tagline}</span>
             <span className="text-white/40">|</span>
             <Link href="/products" className="hover:text-white transition-colors">
-              Pro Discounts
+              Product Catalog
             </Link>
           </div>
         </div>
@@ -85,22 +89,21 @@ export function Header() {
 
       {/* ── Main bar ───────────────────────────────────────────── */}
       <div className="bg-background border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary">
-                <Wrench className="h-5 w-5 text-white" />
-              </div>
-              <div className="leading-none">
-                <span className="font-display text-xl font-bold text-foreground tracking-tight block">
-                  PROBUILD
-                </span>
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.2em]">
-                  Supply
-                </span>
-              </div>
-            </Link>
+            {/* Logo container placed immediately left of the search bar */}
+            <div className="flex items-center justify-center w-56">
+              <Link href="/" aria-label={company.legalName} className="flex items-center">
+                <Image
+                  src={company.logo.primary}
+                  alt={company.logo.alt}
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 object-contain"
+                  priority
+                />
+              </Link>
+            </div>
 
             {/* Search bar — desktop */}
             <form
@@ -196,10 +199,16 @@ export function Header() {
                 <SheetContent side="right" className="w-80 overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle className="flex items-center gap-2">
-                      <div className="flex items-center justify-center w-7 h-7 rounded bg-primary">
-                        <Wrench className="h-4 w-4 text-white" />
+                      <div className="flex items-center justify-center w-12 h-12">
+                        <Image
+                          src={company.logo.primary}
+                          alt={company.logo.alt}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 object-contain"
+                        />
                       </div>
-                      PROBUILD Supply
+                      <span className="sr-only">{company.legalName}</span>
                     </SheetTitle>
                   </SheetHeader>
 

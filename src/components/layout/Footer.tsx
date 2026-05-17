@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Wrench, Phone, Mail, MapPin,
   Hammer, Zap, Droplets, Paintbrush, Cog, ShieldCheck, Building2,
 } from 'lucide-react'
+import { company } from '@/lib/company'
 
 const DEPT_LINKS = [
   { href: '/products?category=Power+Tools', label: 'Power Tools', icon: Wrench },
@@ -13,6 +15,12 @@ const DEPT_LINKS = [
   { href: '/products?category=Fasteners', label: 'Fasteners', icon: Cog },
   { href: '/products?category=Safety+Equipment', label: 'Safety', icon: ShieldCheck },
   { href: '/products?category=Building+Materials', label: 'Building Materials', icon: Building2 },
+]
+
+const COMPANY_HIGHLIGHTS = [
+  `Core activities: ${company.coreActivities}`,
+  `Headquarters: ${company.headquarters}`,
+  `Client base: ${company.customerBase}`,
 ]
 
 export function Footer() {
@@ -26,31 +34,27 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
-                <Wrench className="h-4 w-4 text-white" />
-              </div>
-              <div className="leading-none">
-                <span className="font-display text-lg font-bold text-white tracking-tight block">
-                  PROBUILD
-                </span>
-                <span className="text-[9px] font-medium text-white/40 uppercase tracking-[0.2em]">
-                  Supply
-                </span>
-              </div>
+              <Image
+                src={company.logo.primary}
+                alt={company.logo.alt}
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+              />
+              <span className="sr-only">{company.legalName}</span>
             </div>
             <p className="text-sm text-white/50 leading-relaxed">
-              Professional-grade tools and building materials for contractors
-              and DIY enthusiasts. Quality you can build on.
+              {company.description}
             </p>
             <div className="space-y-2 text-sm text-white/50">
               <p className="flex items-center gap-2">
-                <Phone className="h-3.5 w-3.5 text-primary" /> (555) 123-4567
+                <Phone className="h-3.5 w-3.5 text-primary" /> {company.contact.phone}
               </p>
               <p className="flex items-center gap-2">
-                <Mail className="h-3.5 w-3.5 text-primary" /> support@probuild.com
+                <Mail className="h-3.5 w-3.5 text-primary" /> {company.contact.email}
               </p>
               <p className="flex items-center gap-2">
-                <MapPin className="h-3.5 w-3.5 text-primary" /> 123 Builder Ave, Construction City
+                <MapPin className="h-3.5 w-3.5 text-primary" /> {company.headquarters}
               </p>
             </div>
           </div>
@@ -103,17 +107,10 @@ export function Footer() {
           {/* Store Info */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              Why ProBuild?
+              Company Information
             </h3>
             <ul className="space-y-3">
-              {[
-                'Free shipping over $75',
-                'Same-day pickup available',
-                'Contractor volume pricing',
-                'Easy 30-day returns',
-                'Expert staff & support',
-                'Satisfaction guaranteed',
-              ].map((item) => (
+              {COMPANY_HIGHLIGHTS.map((item) => (
                 <li key={item} className="text-sm text-white/50 flex items-start gap-2">
                   <span className="inline-block w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
                   {item}
@@ -125,10 +122,10 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} ProBuild Supply. All rights reserved.
+            © {new Date().getFullYear()} {company.legalName}. All rights reserved.
           </p>
           <p className="text-xs text-white/30">
-            Built for Pros. Priced for Everyone.
+            Serving {company.customerBase}.
           </p>
         </div>
       </div>

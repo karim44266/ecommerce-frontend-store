@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 import { createOrder } from '@/lib/api'
+import { formatCurrency } from '@/lib/formatters'
 
 /* ── 2-step checkout ─────────────────────────────────────────── */
 type Step = 'shipping' | 'review'
@@ -306,7 +307,7 @@ export default function CheckoutPage() {
                           <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                         <span className="hw-price text-sm font-bold shrink-0">
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          {formatCurrency(item.product.price * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -331,7 +332,7 @@ export default function CheckoutPage() {
                 {loading ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
                 ) : (
-                  <>Place Order &mdash; ${total.toFixed(2)}</>
+                  <>Place Order &mdash; {formatCurrency(total)}</>
                 )}
               </Button>
             </div>
@@ -353,7 +354,7 @@ export default function CheckoutPage() {
                     {item.product.name} &times; {item.quantity}
                   </span>
                   <span className="hw-price font-medium shrink-0">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    {formatCurrency(item.product.price * item.quantity)}
                   </span>
                 </div>
               ))}
@@ -362,12 +363,12 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="hw-price font-semibold">${subtotal.toFixed(2)}</span>
+                <span className="hw-price font-semibold">{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className={`hw-price font-semibold ${shippingCost === 0 ? 'text-hw-green' : ''}`}>
-                  {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                  {shippingCost === 0 ? 'FREE' : formatCurrency(shippingCost)}
                 </span>
               </div>
 
@@ -375,7 +376,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between items-center pt-1">
                 <span className="font-display text-base font-bold uppercase">Total</span>
-                <span className="hw-price text-xl font-bold text-primary">${total.toFixed(2)}</span>
+                <span className="hw-price text-xl font-bold text-primary">{formatCurrency(total)}</span>
               </div>
             </CardContent>
           </Card>

@@ -18,6 +18,7 @@ import { ProductCard } from '@/components/store/ProductCard'
 import { useCart } from '@/context/CartContext'
 import { getProduct, getProducts, type Product } from '@/lib/api'
 import { useRecommendations } from '@/lib/hooks/useRecommendations'
+import { formatCurrency } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 
 const PromotionCarousel = dynamic(
@@ -169,17 +170,17 @@ export default function ProductDetailPage() {
             )}
             {hasDiscount && (
               <span className="text-base text-muted-foreground line-through">
-                ${product.price.toFixed(2)}
+                {formatCurrency(product.price)}
               </span>
             )}
             <span className="text-3xl sm:text-4xl font-extrabold text-foreground hw-price">
-              ${effectivePrice.toFixed(2)}
+              {formatCurrency(effectivePrice)}
             </span>
           </div>
 
           {hasDiscount && product.activeDiscount?.minOrderAmount && (
             <p className="text-xs text-muted-foreground">
-              Discount campaign minimum order: ${Number(product.activeDiscount.minOrderAmount).toFixed(2)}
+              Discount campaign minimum order: {formatCurrency(product.activeDiscount.minOrderAmount)}
             </p>
           )}
 
@@ -252,7 +253,7 @@ export default function ProductDetailPage() {
           <Separator />
           <div className="grid grid-cols-3 gap-4">
             {[
-              { icon: <Truck className="h-4 w-4" />, label: 'Free shipping $75+' },
+              { icon: <Truck className="h-4 w-4" />, label: `Free shipping ${formatCurrency(75)}+` },
               { icon: <RotateCcw className="h-4 w-4" />, label: '30-day returns' },
               { icon: <ShieldCheck className="h-4 w-4" />, label: 'Pro guaranteed' },
             ].map((item) => (

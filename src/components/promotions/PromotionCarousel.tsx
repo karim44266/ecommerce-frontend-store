@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useTracker } from '@/lib/hooks/useTracker';
 import type { PromotionDto } from '@/lib/hooks/useRecommendations';
+import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
 const API_BASE_URL =
@@ -433,11 +434,11 @@ function PromotionProductCard({
             <div className="flex flex-col">
               {hasDiscount && (
                 <span className="text-[11px] text-muted-foreground line-through">
-                  ${promotion.price.toFixed(2)}
+                  {formatCurrency(promotion.price)}
                 </span>
               )}
               <span className="text-lg font-bold text-foreground hw-price">
-                ${effectivePrice.toFixed(2)}
+                {formatCurrency(effectivePrice)}
               </span>
             </div>
             <Button
