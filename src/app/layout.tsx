@@ -3,6 +3,7 @@ import { Barlow_Condensed, Outfit } from 'next/font/google'
 import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { company } from '@/lib/company'
 import './globals.css'
 
 const barlowCondensed = Barlow_Condensed({
@@ -20,9 +21,11 @@ const outfit = Outfit({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'ProBuild Supply', template: '%s | ProBuild Supply' },
-  description:
-    'Professional hardware, tools & building materials — same-day pickup, pro discounts, and free shipping over $75.',
+  title: { default: company.legalName, template: `%s | ${company.shortName}` },
+  description: company.seoDescription,
+  icons: {
+    icon: company.logo.primary,
+  },
 }
 
 export default function RootLayout({

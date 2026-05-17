@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
-  Wrench, UserPlus, Eye, EyeOff, Loader2,
+  UserPlus, Eye, EyeOff, Loader2,
   Truck, Calculator, ClipboardList, ShieldCheck, Percent, Headphones,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
+import { company } from '@/lib/company'
 
 const PRO_PERKS = [
   { icon: Percent, title: 'Volume Pricing', desc: 'Bulk discounts for contractors' },
@@ -91,19 +93,22 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
           {/* Brand */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white">
-                <Wrench className="h-6 w-6" />
-              </div>
-              <span className="font-display text-2xl font-bold uppercase tracking-tight text-hw-dark dark:text-white">
-                ProBuild
-              </span>
+            <Link href="/" className="inline-flex items-center gap-2 mb-4" aria-label={company.legalName}>
+              <Image
+                src={company.logo.primary}
+                alt={company.logo.alt}
+                width={64}
+                height={64}
+                className="h-16 w-16 object-contain"
+                priority
+              />
+              <span className="sr-only">{company.legalName}</span>
             </Link>
             <h1 className="font-display text-2xl font-bold uppercase tracking-tight">
               Create Your Account
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Join thousands of pros and DIYers
+              Join our network of {company.customerBase.toLowerCase()}.
             </p>
           </div>
 
@@ -216,7 +221,7 @@ export default function RegisterPage() {
           </Card>
 
           <p className="text-center text-[11px] text-muted-foreground mt-4">
-            Your data is secure &bull; 256-bit encryption &bull; ProBuild Supply
+            Your data is secure &bull; 256-bit encryption &bull; {company.legalName}
           </p>
         </div>
       </div>
@@ -229,7 +234,7 @@ export default function RegisterPage() {
             Why Go Pro?
           </h2>
           <p className="text-white/60 text-sm mb-8">
-            ProBuild accounts unlock exclusive benefits for contractors, builders, and serious DIYers.
+            {company.shortName} accounts unlock dedicated support for hardware manufacturing and distribution.
           </p>
 
           <div className="space-y-5">

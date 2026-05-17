@@ -13,7 +13,9 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import { getOrder, type OrderStatus } from '@/lib/api'
+import { formatCurrency } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
+import { company } from '@/lib/company'
 
 interface ShippingAddress {
   fullName: string
@@ -136,7 +138,7 @@ export default function OrderTrackingPage() {
               <div>
                 <p className="font-semibold">Order {normalizedStatus.toLowerCase()}</p>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  This order was cancelled or refunded. Contact support if you need help.
+                  This order was cancelled or refunded. Contact {company.contact.email} if you need help.
                 </p>
               </div>
             </div>
@@ -206,7 +208,7 @@ export default function OrderTrackingPage() {
                   <p className="text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
                 <p className="font-semibold text-foreground">
-                  ${(item.unitPrice * item.quantity).toFixed(2)}
+                  {formatCurrency(item.unitPrice * item.quantity)}
                 </p>
               </li>
             ))}
@@ -214,7 +216,7 @@ export default function OrderTrackingPage() {
           <Separator />
           <div className="flex justify-between font-bold text-foreground pt-1">
             <span>Total</span>
-            <span>${order.totalAmount.toFixed(2)}</span>
+            <span>{formatCurrency(order.totalAmount)}</span>
           </div>
         </CardContent>
       </Card>

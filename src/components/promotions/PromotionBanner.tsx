@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { PromotionDto } from '@/lib/hooks/useRecommendations';
+import { formatCurrency } from '@/lib/formatters';
 
 interface PromotionBannerProps {
   categoryId: string;
@@ -49,7 +50,7 @@ export function PromotionBanner({
                   {promotion.productName}
                 </span>
                 <span className="text-[11px] text-muted-foreground">
-                  ${promotion.price.toFixed(2)} · {promotion.promotionReason}
+                  {formatCurrency(promotion.price)} · {promotion.promotionReason}
                 </span>
               </span>
             </Button>

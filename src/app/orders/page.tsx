@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import { getOrders, type OrderSummary } from '@/lib/api'
+import { formatCurrency } from '@/lib/formatters'
 
 /* ── Status display helpers ──────────────────────────────────────── */
 
@@ -171,7 +172,7 @@ export default function OrdersListPage() {
                         {itemCount} item{itemCount !== 1 ? 's' : ''}
                         {' · '}
                         <span className="font-semibold text-foreground">
-                          ${order.totalAmount.toFixed(2)}
+                          {formatCurrency(order.totalAmount)}
                         </span>
                       </p>
                     </div>

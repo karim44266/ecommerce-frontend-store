@@ -3,12 +3,14 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Wrench, LogIn, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
+import { LogIn, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
+import { company } from '@/lib/company'
 
 function LoginForm() {
   const router = useRouter()
@@ -46,13 +48,16 @@ function LoginForm() {
       <div className="w-full max-w-md">
         {/* Brand */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white">
-              <Wrench className="h-6 w-6" />
-            </div>
-            <span className="font-display text-2xl font-bold uppercase tracking-tight text-hw-dark dark:text-white">
-              ProBuild
-            </span>
+          <Link href="/" className="inline-flex items-center gap-2 mb-4" aria-label={company.legalName}>
+            <Image
+              src={company.logo.primary}
+              alt={company.logo.alt}
+              width={64}
+              height={64}
+              className="h-16 w-16 object-contain"
+              priority
+            />
+            <span className="sr-only">{company.legalName}</span>
           </Link>
           <h1 className="font-display text-2xl font-bold uppercase tracking-tight">
             Sign In to Your Account
@@ -138,7 +143,7 @@ function LoginForm() {
 
         {/* Trust line */}
         <p className="text-center text-[11px] text-muted-foreground mt-4">
-          Your data is secure &bull; 256-bit encryption &bull; ProBuild Supply
+          Your data is secure &bull; 256-bit encryption &bull; {company.legalName}
         </p>
       </div>
     </div>

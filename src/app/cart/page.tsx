@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useCart } from '@/context/CartContext'
+import { formatCurrency } from '@/lib/formatters'
 
 const FREE_SHIPPING_THRESHOLD = 75
 
@@ -65,7 +66,7 @@ export default function CartPage() {
           <div className="flex items-center gap-2 mb-2">
             <Truck className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold">
-              Add <span className="hw-price text-primary">${freeShippingDelta.toFixed(2)}</span> more for{' '}
+              Add <span className="hw-price text-primary">{formatCurrency(freeShippingDelta)}</span> more for{' '}
               <span className="text-primary font-bold">FREE SHIPPING</span>
             </span>
           </div>
@@ -140,11 +141,11 @@ export default function CartPage() {
                     {/* Price on desktop */}
                     <div className="hidden sm:flex flex-col items-end justify-between">
                       <span className="hw-price text-lg font-bold">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        {formatCurrency(item.product.price * item.quantity)}
                       </span>
                       {item.quantity > 1 && (
                         <span className="text-xs text-muted-foreground hw-price">
-                          ${item.product.price.toFixed(2)} each
+                          {formatCurrency(item.product.price)} each
                         </span>
                       )}
                     </div>
@@ -179,7 +180,7 @@ export default function CartPage() {
 
                     {/* Price on mobile */}
                     <span className="sm:hidden hw-price text-base font-bold">
-                      ${(item.product.price * item.quantity).toFixed(2)}
+                      {formatCurrency(item.product.price * item.quantity)}
                     </span>
 
                     {/* Remove */}
@@ -211,12 +212,12 @@ export default function CartPage() {
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
-                  <span className="hw-price font-semibold">${subtotal.toFixed(2)}</span>
+                  <span className="hw-price font-semibold">{formatCurrency(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span className={`hw-price font-semibold ${shippingCost === 0 ? 'text-hw-green' : ''}`}>
-                    {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                    {shippingCost === 0 ? 'FREE' : formatCurrency(shippingCost)}
                   </span>
                 </div>
               </div>
@@ -226,7 +227,7 @@ export default function CartPage() {
               <div className="flex justify-between items-center">
                 <span className="font-display text-base font-bold uppercase">Total</span>
                 <span className="hw-price text-2xl font-bold text-primary">
-                  ${total.toFixed(2)}
+                  {formatCurrency(total)}
                 </span>
               </div>
 
@@ -245,7 +246,7 @@ export default function CartPage() {
           {/* Trust badges */}
           <div className="mt-4 grid grid-cols-3 gap-2">
             {[
-              { icon: Truck, label: 'Free Ship $75+' },
+              { icon: Truck, label: `Free Ship ${formatCurrency(FREE_SHIPPING_THRESHOLD)}+` },
               { icon: ShieldCheck, label: 'Guaranteed' },
               { icon: RotateCcw, label: '30-Day Return' },
             ].map(({ icon: Icon, label }) => (

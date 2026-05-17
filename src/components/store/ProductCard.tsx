@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/context/CartContext'
 import type { Product } from '@/lib/api'
+import { formatCurrency } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
@@ -100,11 +101,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
             <div className="flex flex-col">
               {hasDiscount && (
                 <span className="text-[11px] text-muted-foreground line-through">
-                  ${product.price.toFixed(2)}
+                  {formatCurrency(product.price)}
                 </span>
               )}
               <span className="text-lg font-bold text-foreground hw-price">
-                ${effectivePrice.toFixed(2)}
+                {formatCurrency(effectivePrice)}
               </span>
             </div>
             <Button

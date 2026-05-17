@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/store/ProductCard'
 import { HomePromotionsSection } from '@/components/promotions/HomePromotionsSection'
 import { getProducts, getCategories, type SimpleCategory } from '@/lib/api'
+import { company } from '@/lib/company'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,21 +43,20 @@ export default async function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
           <div className="max-w-2xl space-y-6">
             <Badge className="bg-blue-100 text-blue-800 border-blue-200 font-semibold text-xs tracking-wider uppercase">
-              Same-Day Pickup Available
+              Premium Hardware Distribution
             </Badge>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.05] tracking-tight uppercase">
-              Built for Pros.
+              {company.displayName}
               <br />
-              <span className="text-primary">Priced for Everyone.</span>
+              <span className="text-primary">{company.tagline}</span>
             </h1>
             <p className="text-base sm:text-lg text-white/60 leading-relaxed max-w-lg">
-              Professional-grade tools, building materials, and construction supplies.
-              Everything you need to get the job done right.
+              {company.description}
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
               <Link href="/products">
                 <Button size="lg" className="gap-2 font-semibold text-sm uppercase tracking-wide hw-glow">
-                  Shop All Products <ArrowRight className="h-4 w-4" />
+                  Browse Catalog <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/register">
@@ -65,7 +65,7 @@ export default async function HomePage() {
                   variant="outline"
                   className="border-white/30 text-white hover:bg-white/10 hover:text-white gap-2 text-sm uppercase tracking-wide font-semibold"
                 >
-                  Open Pro Account
+                  Open Business Account
                 </Button>
               </Link>
             </div>
@@ -77,9 +77,21 @@ export default async function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10 hw-fade-up">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { icon: <Truck className="h-5 w-5" />, title: 'Free Shipping $75+', desc: 'On qualifying orders nationwide' },
-            { icon: <RotateCcw className="h-5 w-5" />, title: '30-Day Returns', desc: 'Hassle-free return policy' },
-            { icon: <ShieldCheck className="h-5 w-5" />, title: 'Pro Guaranteed', desc: 'Top brands, trusted quality' },
+            {
+              icon: <Truck className="h-5 w-5" />,
+              title: 'Hardware Manufacturing & Distribution',
+              desc: `Serving ${company.customerBase.toLowerCase()}.`,
+            },
+            {
+              icon: <RotateCcw className="h-5 w-5" />,
+              title: 'Trusted Supply Partner',
+              desc: 'Reliable sourcing and fulfillment across our catalog.',
+            },
+            {
+              icon: <ShieldCheck className="h-5 w-5" />,
+              title: 'After-Sales Support',
+              desc: 'Dedicated service and support for every deployment.',
+            },
           ].map((badge) => (
             <Card key={badge.title} className="border-border shadow-md bg-card hw-lift">
               <CardContent className="flex items-center gap-4 p-4">
@@ -198,11 +210,10 @@ export default async function HomePage() {
           <div className="relative px-8 py-12 sm:py-16 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="space-y-3 text-center sm:text-left">
               <h2 className="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
-                Open a Pro Account
+                Open a Business Account
               </h2>
               <p className="text-white/50 text-sm max-w-md">
-                Get volume pricing, dedicated account management, net-30 terms,
-                and priority access to new products.
+                Partner with {company.displayName} for {company.coreActivities.toLowerCase()} tailored to your operations.
               </p>
             </div>
             <Link href="/register" className="flex-shrink-0">
