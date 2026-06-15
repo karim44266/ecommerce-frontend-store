@@ -63,9 +63,9 @@ export default async function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/30 text-white hover:bg-white/10 hover:text-white gap-2 text-sm uppercase tracking-wide font-semibold"
+                  className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white gap-2 text-sm uppercase tracking-wide font-semibold"
                 >
-                  Open Business Account
+                  Open an Account
                 </Button>
               </Link>
             </div>
